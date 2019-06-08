@@ -1,5 +1,6 @@
 require('trumbowyg');
 require('trumbowyg/plugins/upload/trumbowyg.upload');
+require('trumbowyg/plugins/emoji/trumbowyg.emoji');
 
 
 
@@ -12,7 +13,6 @@ $('.sidebar-toggle-wrapper button').on('click', function(){
 });
 
 $('.nav li a:not(:only-child)').on('click', function() {
-  //  $(this).parent().toggleClass('active');
   $(this).next().slideToggle();
 });
 
@@ -40,6 +40,7 @@ $('textarea').trumbowyg({
         ['removeformat'],
         ['fullscreen'],
         ['upload'],
+        ['emoji'],
   ],
   plugins:{
     upload: {

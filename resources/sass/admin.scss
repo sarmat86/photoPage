@@ -1,6 +1,8 @@
 @import '~bootstrap/scss/bootstrap';
 @import 'font.css';
 @import 'external';
+@import "~trumbowyg/dist/ui/sass/trumbowyg";
+@import "~trumbowyg/dist/plugins/emoji/ui/sass/trumbowyg.emoji";
 
 a{
   color: $link_c;
@@ -10,10 +12,20 @@ a:hover{
 color: $link_c_h;
 text-decoration: none;
 }
+.table-sm th, .table-sm td {
+  padding: 5px 10px;
+}
+textarea{
+  width: 100%;
+}
 .admin-panel{
   .card{
     padding: 15px;
   }
+  header {
+    text-align: center;
+    padding: 15px;
+}
 }
 
   .wrapper {
@@ -74,6 +86,9 @@ text-decoration: none;
   background: $theme_bg_dark;
   display: none;
 }
+.nav-second-lvl.active{
+display: block;
+}
 .nav-second-lvl li{
   border-bottom: 1px solid #333e50;
 }
@@ -88,7 +103,7 @@ text-decoration: none;
   position: relative;
 
 }
-.admin-nav > ul > li.active > a {
+.admin-nav  ul  li.active  a {
   color: $active_c;
 }
 .nav li a:hover{
@@ -154,7 +169,13 @@ cursor: pointer;
   margin: 10px;
 }
 .content-wrapper{
-  height: 100vh;
   background: $theme_bg_light;
-  padding: 25px;
+  padding: 0 25px;
+  min-height: calc(100vh - 45px);
+}
+.list_image{
+  max-height: 100px;
+}
+.del-form{
+  display: inline-block;
 }

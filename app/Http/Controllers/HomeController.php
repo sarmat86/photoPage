@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Category;
+use App\Blog;
+use App\CmsZone;
 
 class HomeController extends Controller
 {
@@ -23,6 +26,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('front.home');
+        $categories = Category::all();
+        $posts = Blog::all();
+        $cmsZones = CmsZone::all();
+        return view('front.home', compact('categories', 'posts', 'cmsZones'));
     }
 }

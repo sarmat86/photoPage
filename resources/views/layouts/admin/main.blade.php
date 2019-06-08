@@ -5,9 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="{{asset('css/admin.css')}}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{asset('css/admin.css')}}"> 
     <title>Admin Panel</title>
 </head>
 
@@ -48,8 +47,15 @@
                 </div>
             </div>
             <div class="content-wrapper container-fluid">
-                @include('layouts.info')
+                <div class="col-md-12">
+                <header>
+                    <h4> 
+                        @yield('header') 
+                    </h4>
+                  </header>
+                  @include('layouts.info')
                 @yield('content')
+            </div>
             </div>
         </div>
     </div>
@@ -58,7 +64,8 @@
 
     </footer>
 
-    <script src="{{asset('js/libs.js')}}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="{{asset('js/admin/admin.js')}}"></script>
 
 </body>
 

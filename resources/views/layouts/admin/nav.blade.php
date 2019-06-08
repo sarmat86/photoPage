@@ -5,10 +5,25 @@
         </li>
         <li><a href="#"><i class="icon-wrench"></i>Zarządzanie stroną</a>
         </li>
+        <li><a ><i class="icon-pencil"></i>Strefy CMS</a>
+            <ul class="nav nav-second-lvl">
+                <li class="{{request()->routeIs('CmsZone.create') == 1 ? 'active' : '' }}"">
+                <a href="{{route('CmsZone.create')}}">Dodaj strefę</a></li>
+            <li class="{{request()->routeIs('CmsZone.index') == 1 ? 'active' : '' }}">
+                <a href="{{route('CmsZone.index')}}">Lista CMS</a>
+            </li>
+            </ul>
+        </li>
         <li><a href="#"><i class="icon-pencil"></i>Blog</a>
             <ul class="nav nav-second-lvl">
-                <li><a href="#">Utwórz post</a></li>
-                <li><a href="#">Lista postów</a></li>
+                <li class="{{request()->routeIs('blog.create') == 1 ? 'active' : '' }}">
+                <a href="{{route('blog.create')}}">Utwórz post</a></li>
+                <li class="{{request()->routeIs('blog.index') == 1 ? 'active' : '' }}">
+                <a href="{{route('blog.index')}}">Lista postów</a>
+                </li>
+            <li class="{{request()->routeIs('categories.create') == 1 ? 'active' : '' }}">
+                <a href="{{route('categories.create')}}">Kategorie</a>
+            </li>
             </ul>
         </li>
         <li><a href="#"><i class="icon-picture"></i>Galeria</a>

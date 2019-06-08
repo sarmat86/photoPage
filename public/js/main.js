@@ -86,55 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./resources/js/app.js":
-/*!*****************************!*\
-  !*** ./resources/js/app.js ***!
-  \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-// require('./bootstrap');
-// require('trumbowyg');
-// window.Vue = require('vue');
-
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
-// const files = require.context('./', true, /\.vue$/i);
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
-// Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-// const app = new Vue({
-//     el: '#app',
-// });
-
-/***/ }),
-
-/***/ "./resources/js/libs/main.js":
-/*!***********************************!*\
-  !*** ./resources/js/libs/main.js ***!
-  \***********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-throw new Error("Module build failed (from ./node_modules/babel-loader/lib/index.js):\nError: ENOENT: no such file or directory, open 'C:\\xampp\\htdocs\\www\\photoPage\\resources\\js\\libs\\main.js'");
-
-/***/ }),
-
 /***/ "./resources/sass/admin.scss":
 /*!***********************************!*\
   !*** ./resources/sass/admin.scss ***!
@@ -158,14 +109,13 @@ throw new Error("Module build failed (from ./node_modules/babel-loader/lib/index
 /***/ }),
 
 /***/ 0:
-/*!*********************************************************************************************************************!*\
-  !*** multi ./resources/js/app.js ./resources/js/libs/main.js ./resources/sass/app.scss ./resources/sass/admin.scss ***!
-  \*********************************************************************************************************************/
+/*!***********************************************************************************************!*\
+  !*** multi ./resources/js/libs/main.js ./resources/sass/app.scss ./resources/sass/admin.scss ***!
+  \***********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\www\photoPage\resources\js\app.js */"./resources/js/app.js");
-__webpack_require__(/*! C:\xampp\htdocs\www\photoPage\resources\js\libs\main.js */"./resources/js/libs/main.js");
+!(function webpackMissingModule() { var e = new Error("Cannot find module 'C:\\xampp\\htdocs\\www\\photoPage\\resources\\js\\libs\\main.js'"); e.code = 'MODULE_NOT_FOUND'; throw e; }());
 __webpack_require__(/*! C:\xampp\htdocs\www\photoPage\resources\sass\app.scss */"./resources/sass/app.scss");
 module.exports = __webpack_require__(/*! C:\xampp\htdocs\www\photoPage\resources\sass\admin.scss */"./resources/sass/admin.scss");
 
