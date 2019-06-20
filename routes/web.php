@@ -27,4 +27,6 @@ Route::group(['middleware' => ['admin']], function () {
   Route::resource('admin/CmsZone', 'CmsZoneController');
   Route::resource('admin/categories', 'CategoryController');
   Route::resource('admin/blog', 'BlogController');
+  Route::resource('admin/media', 'MediaController');
+  Route::post('/admin/media/delete', 'MediaController@delete')->name('admin.mediaDelete');
 });

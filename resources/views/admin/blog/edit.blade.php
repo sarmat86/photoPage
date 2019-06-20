@@ -35,7 +35,7 @@ Edit post
         @if ($post->photo_id !== null)
         <div class="col-md-6">
         <div class="form-group">
-                <img src="{{Storage::url($post->photo->path)}}" class="img-responsive">
+                <img src="{{Storage::url($post->photo->path)}}" class="img-responsive edit_image">
                 
         </div>
         {{-- <div class="">

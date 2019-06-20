@@ -4,10 +4,15 @@
             <a href="{{route('admin')}}"><i class="icon-gauge"></i>Pulpit</a>
         </li>
         <li><a href="#"><i class="icon-wrench"></i>Zarządzanie stroną</a>
+            <ul class="nav nav-second-lvl">
+                <li class="{{request()->routeIs('media.index') == 1 ? 'active' : '' }}">
+                    <a href="{{route('media.index')}}">Media</a>
+                </li>
+            </ul>
         </li>
         <li><a ><i class="icon-pencil"></i>Strefy CMS</a>
             <ul class="nav nav-second-lvl">
-                <li class="{{request()->routeIs('CmsZone.create') == 1 ? 'active' : '' }}"">
+                <li class="{{request()->routeIs('CmsZone.create') == 1 ? 'active' : '' }}">
                 <a href="{{route('CmsZone.create')}}">Dodaj strefę</a></li>
             <li class="{{request()->routeIs('CmsZone.index') == 1 ? 'active' : '' }}">
                 <a href="{{route('CmsZone.index')}}">Lista CMS</a>

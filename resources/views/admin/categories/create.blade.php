@@ -8,7 +8,7 @@ Categories
 
       <div class="row">
       <div class="col-md-6">
-      <form action="{{action('CategoryController@store')}}" class="card" method="POST">
+      <form  action="{{action('CategoryController@store')}}" class="card" method="POST">
           <h5>Add new category</h5>
           @csrf
         <div class="row">

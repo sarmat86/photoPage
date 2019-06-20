@@ -7,7 +7,7 @@ Create new CMS zone
 
 
       <div class="form-wrapper col-md-12">
-      <form action="{{action('CmsZoneController@store')}}" class="card" method="POST">
+      <form action="{{action('CmsZoneController@store')}}" class="card media_upload" method="POST">
           @csrf
         <div class="row">
           <div class="col-md-6">

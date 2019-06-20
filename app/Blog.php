@@ -31,5 +31,9 @@ class Blog extends Model
             ]
         ];
     }
+    public function image()
+    {
+        return $this->morphMany('App\Media', 'imageable');
+    }
     
 }

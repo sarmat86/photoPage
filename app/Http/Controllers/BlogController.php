@@ -7,6 +7,8 @@ use App\Category;
 use App\Blog;
 use Illuminate\Support\Facades\Storage;
 use App\Photo;
+use App\Media;
+use Illuminate\Support\Facades\DB;
 
 class BlogController extends Controller
 {
@@ -17,8 +19,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        
-        $posts = Blog::all(); 
+        $posts = Blog::orderBy('created_at', 'desc')->paginate(15); 
         return view('admin.blog.index', compact('posts'));
     }
 
@@ -60,9 +61,19 @@ class BlogController extends Controller
             $input['photo_id'] = $photo->id;
 
         }
-         Blog::create($input);
-         $request->session()->flash('status', 'New post has been created');
-         return redirect()->route('blog.index');
+         $newPost = Blog::create($input);
+        
+        if($medias = $request->mediaID){
+            foreach ($medias as $media) {
+                $toUpdate = Media::findOrFail($media);
+                $toUpdate->update([
+                   "imageable_id" => $newPost->id,
+                   'imageable_type' => 'App\Blog'
+               ]);
+            }
+        }
+        $request->session()->flash('status', 'New post has been created');
+        return redirect()->route('blog.index');
     }
 
     /**
@@ -149,6 +160,13 @@ class BlogController extends Controller
         
             
             $photo->delete();
+        }
+        $media = $post->image;
+        foreach ($media as $item) {
+            if (Storage::exists($item->path)) {
+                Storage::delete($item->path);
+            }
+            Media::findOrFail($item->id)->delete();
         }
         $post->delete();
         $request->session()->flash('status', 'Post has been deleted');

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\CmsZone;
+use App\Media;
+use Illuminate\Support\Facades\Storage;
 
 class CmsZoneController extends Controller
 {
@@ -14,7 +16,7 @@ class CmsZoneController extends Controller
      */
     public function index()
     {
-        $cmsZones = CmsZone::all();
+        $cmsZones = CmsZone::orderBy('page', 'asc')->paginate(15);
         return view('admin.CmsZones.index', compact('cmsZones'));
     }
 
@@ -42,7 +44,19 @@ class CmsZoneController extends Controller
             'content' => 'required|max:65535 '
         ]);
 
-        CmsZone::create($data);
+        $newCmsZone = CmsZone::create($data);
+
+        if($medias = $request->mediaID){
+            foreach ($medias as $media) {
+                $toUpdate = Media::findOrFail($media);
+                $toUpdate->update([
+                   "imageable_id" => $newCmsZone->id,
+                   'imageable_type' => 'App\CmsZone'
+               ]);
+            }
+        }
+
+
         $request->session()->flash('status', 'New CMS zone has been created');
         return redirect()->route('CmsZone.index');
     }
@@ -98,7 +112,18 @@ class CmsZoneController extends Controller
      */
     public function destroy($id, Request $request)
     {
-        $cmsZone = CmsZone::findOrFail($id)->delete();
+        $cmsZone = CmsZone::findOrFail($id);
+
+        $media = $cmsZone->image;
+        foreach ($media as $item) {
+
+            if (Storage::exists($item->path)) {
+                Storage::delete($item->path);
+            }
+            Media::findOrFail($item->id)->delete();
+        }
+        $cmsZone->delete();
+
         $request->session()->flash('status', 'Cms zone "'.$request->name.'"'.' has been deleted');
         return redirect()->route('CmsZone.index');
     }

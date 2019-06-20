@@ -1,3 +1,6 @@
+
+$primary: #28ce63;
+
 @import '~bootstrap/scss/bootstrap';
 @import 'font.css';
 @import 'external';
@@ -174,8 +177,16 @@ cursor: pointer;
   min-height: calc(100vh - 45px);
 }
 .list_image{
-  max-height: 100px;
+  max-height: 50px;
+}
+.edit_image{
+  max-height: 150px;
 }
 .del-form{
   display: inline-block;
+}
+.pagination_wrapper{
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
 }

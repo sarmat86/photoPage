@@ -7,7 +7,7 @@ Create new post
 
 
 <div class="form-wrapper col-md-12">
-    <form action="{{action('BlogController@store')}}" class="card" method="POST" enctype="multipart/form-data">
+    <form id="post_create_form" action="{{action('BlogController@store')}}" class="card media_upload" method="POST" enctype="multipart/form-data" >
         @csrf
       <div class="row">
         <div class="col-md-6">

@@ -3702,9 +3702,40 @@ $(document).ready(function () {
     btns: [['viewHTML'], ['formatting'], ['strong', 'em', 'del'], ['link'], ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'], ['unorderedList', 'orderedList'], ['horizontalRule'], ['removeformat'], ['fullscreen'], ['upload'], ['emoji']],
     plugins: {
       upload: {
-        serverPath: ''
+        serverPath: '/admin/media',
+        fileFieldName: 'file',
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        urlPropertyName: 'url',
+        success: function success(data, trumbowyg, $modal, values) {
+          $('.media_upload').append('<input type="hidden" name="mediaID[]" value="' + data.photo.id + '"/>');
+          var url = data.url;
+          trumbowyg.execCmd('insertImage', url, false, true);
+          var $img = $('img[src="' + url + '"]:not([alt])', trumbowyg.$box);
+          $img.attr('alt', values.alt);
+
+          if (trumbowyg.o.imageWidthModalEdit && parseInt(values.width) > 0) {
+            $img.attr({
+              width: values.width
+            });
+          }
+
+          setTimeout(function () {
+            trumbowyg.closeModal();
+          }, 250);
+          trumbowyg.$c.trigger('tbwuploadsuccess', [trumbowyg, data, url]);
+        }
       }
     }
+  });
+  document.addEventListener('click', function (event) {
+    if (!event.target.matches('#selectAll')) return;
+    isChecked = event.target.checked;
+    var inputs = document.querySelectorAll('input[name="deleteMedia[]"]');
+    inputs.forEach(function (elem, i) {
+      elem.checked = isChecked;
+    });
   });
 });
 

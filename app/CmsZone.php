@@ -11,4 +11,9 @@ class CmsZone extends Model
         'page',
         'content'
     ];
+
+    public function image()
+    {
+        return $this->morphMany('App\Media', 'imageable');
+    }
 }
