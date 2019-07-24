@@ -32,24 +32,25 @@ Edit post
                 </select>
             </div>
         </div>
-        @if ($post->photo_id !== null)
+      
         <div class="col-md-6">
-        <div class="form-group">
-                <img src="{{Storage::url($post->photo->path)}}" class="img-responsive edit_image">
-                
-        </div>
-        {{-- <div class="">
-                <a href="" class="btn btn-danger ">Delete photo</a>
-        </div> --}}
-        </div>
-        @endif
+                <div class="thumbnail_preview_wrapper">
+                <img src="{{$post->photo_id ? Storage::url($post->photo->path) : ''}}" class="thumbnail_preview">
+                </div>
+            </div>
+        <div class="col-md-6">
+        <div class="form-group thumbnail_description {{$post->photo_id ? 'active' : ''}} ">
+                    <label for="title">Photo description </label>
+                <input type="text" name="name" id="name_input" class="form-control" value="{{$post->photo_id !== null ? $post->photo->name : ''}}">
+                </div>
+            </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="file" class="d-block">Upload photo</label>
                 <input type="file" name="file" id="file" class="d-block">
             </div>
-        
         </div>
+      
         
         
         <div class="col-md-12">

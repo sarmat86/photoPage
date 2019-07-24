@@ -3680,21 +3680,36 @@ __webpack_require__(/*! trumbowyg/plugins/upload/trumbowyg.upload */ "./node_mod
 
 __webpack_require__(/*! trumbowyg/plugins/emoji/trumbowyg.emoji */ "./node_modules/trumbowyg/plugins/emoji/trumbowyg.emoji.js");
 
-$(document).ready(function () {
-  $('.sidebar-toggle-wrapper button').on('click', function () {
-    $(this).toggleClass('is-active');
-    $('.sidebar').toggleClass('toggled');
-  });
-  $('.nav li a:not(:only-child)').on('click', function () {
-    $(this).next().slideToggle();
-  });
-  $('.user-options').on('click', function () {
-    $(this).find('.dropdown-user').slideToggle();
-  });
-  var secondLevel = $('.nav-second-lvl').find('.active');
+var imgTemplate = "<div data-id=\"\" data-position=\"\" class=\"photo-tile\">\n<div class=\"move_handle\"><i class=\"icon-move\"></i></div>\n<div class=\"photo_tile_img_wrapper\"><img src=\"\"></div>\n<div class=\"photo_tile_btns__wrapper\">\n        <a href=\"#\" class=\"btn btn-danger galPhoto__del\"><i class=\"icon-trash-empty\"></i></a>\n      </div>\n        <div class=\"photo_tile_input_wrapper\">\n          <input type=\"text\" name=\"alt\" placeholder=\"photo description\" value=\"\">\n          </div>\n</div>";
+document.addEventListener("DOMContentLoaded", function () {
+  console.log('admin-panel');
+  Dropzone.autoDiscover = false;
+  var galleryDropZone = null;
 
-  if (secondLevel) {
-    secondLevel.parent().addClass('active');
+  if (document.getElementsByClassName('dropzone').length) {
+    var id = document.querySelector('.dropzone').getAttribute('data-id');
+    Dropzone.autoDiscover = false;
+    galleryDropZone = new Dropzone("#galleryPhotosDropZone", {
+      url: "/admin/galleryPhoto",
+      method: 'POST',
+      paramName: 'galleryPhoto',
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      acceptedFiles: 'image/*',
+      createImageThumbnails: false,
+      previewTemplate: imgTemplate,
+      previewsContainer: '.gallery_photos_wrapper',
+      params: {
+        gallery_id: id
+      }
+    });
+    galleryDropZone.on("success", function (file, response) {
+      var elem = file.previewElement;
+      elem.setAttribute('data-id', response.id);
+      elem.querySelector('img').setAttribute('src', response.url);
+      file.previewElement.id = response.id;
+    });
   }
 
   $.trumbowyg.svgPath = '/fonts/trumbowyg/icons.svg';
@@ -3729,15 +3744,247 @@ $(document).ready(function () {
       }
     }
   });
+  $(".gallery_photos_wrapper").sortable({
+    items: '.photo-tile',
+    handle: '.move_handle',
+    cancel: '.photo_tile_btns__wrapper',
+    cursor: 'move',
+    opacity: 0.5,
+    containment: '.gallery_photos_wrapper',
+    distance: 20,
+    tolerance: 'pointer'
+  }).disableSelection().on("click", ".galPhoto__del", function (event) {
+    event.preventDefault();
+    deletePhotoRequest(event.target.closest('.photo-tile').getAttribute('data-id'));
+  });
+  $(".gallery_list_wrapper").sortable({
+    items: '.gallery_item',
+    handle: '.move_handle',
+    cancel: '.gallery_item_btns__wrapper',
+    cursor: 'move',
+    opacity: 0.5,
+    containment: '.gallery_list_wrapper',
+    distance: 20,
+    tolerance: 'pointer'
+  });
+  var secondLevel = document.querySelector('.nav-second-lvl .active');
+
+  if (secondLevel) {
+    secondLevel.parentNode.classList.add('active');
+  }
+
   document.addEventListener('click', function (event) {
-    if (!event.target.matches('#selectAll')) return;
-    isChecked = event.target.checked;
-    var inputs = document.querySelectorAll('input[name="deleteMedia[]"]');
-    inputs.forEach(function (elem, i) {
-      elem.checked = isChecked;
-    });
+    if (event.target.closest('#sidebar_switcher')) {
+      event.target.closest('#sidebar_switcher').classList.toggle('is-active');
+      document.querySelector('.sidebar').classList.toggle('toggled');
+    } else if (event.target.matches('.nav li a:not(:only-child)')) {
+      event.target.nextElementSibling.classList.toggle('open');
+    } else if (event.target.matches('.user-options')) {
+      event.target.querySelector('.dropdown-user').classList.toggle('open');
+    } else if (event.target.matches('#selectAll')) {
+      isChecked = event.target.checked;
+      var inputs = document.querySelectorAll('input[name="deleteMedia[]"]');
+      inputs.forEach(function (elem, i) {
+        elem.checked = isChecked;
+      });
+    } else if (event.target.matches('.del-submit')) {
+      event.preventDefault();
+      var form = document.querySelector('.delete-form');
+      form.submit();
+    } else if (event.target.matches('.galPhoto__save')) {
+      event.preventDefault();
+      saveGalleryPhoto(getPosition('.photo-tile', 1));
+    } else if (event.target.matches('.gallery__publish')) {
+      event.preventDefault();
+      publishGallery(event.target);
+    } else if (event.target.matches('.galPosition__update')) {
+      event.preventDefault();
+      updateGalleryPosition(getPosition('.gallery_item'));
+    } else {
+      return false;
+    }
+  });
+  document.addEventListener('change', function (event) {
+    if (event.target.matches('#file')) {
+      onLoadFile(event);
+    } else {
+      return false;
+    }
   });
 });
+
+function updateGalleryButton(target, confirmed) {
+  if (confirmed) {
+    target.classList.remove('btn-info');
+    target.classList.add('btn-secondary');
+    target.innerHTML = 'unpublish';
+  } else {
+    target.classList.remove('btn-secondary');
+    target.classList.add('btn-info');
+    target.innerHTML = 'publish';
+  }
+}
+
+function publishGallery(target) {
+  var id = target.closest('.gallery_item').getAttribute('data-id');
+  loader(true);
+  $.ajax({
+    type: 'POST',
+    url: '/admin/gallery/publish',
+    dataType: 'JSON',
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: {
+      id: id
+    },
+    success: function success(response) {
+      loader(false);
+      var published = '';
+
+      if (response.confirmed) {
+        published = 'Gallery has been published!';
+      } else {
+        published = 'Gallery has been unpublished!';
+      }
+
+      alertify.alert('Success', published);
+      updateGalleryButton(target, response.confirmed);
+    },
+    error: function error(xhr) {
+      console.log(xhr.responseText);
+      loader(false);
+      alertify.alert('Error', 'An error occurred while publishing the gallery. Try again later');
+    }
+  });
+}
+
+function updateGalleryPosition(data) {
+  loader(true);
+  $.ajax({
+    type: 'POST',
+    url: '/admin/gallery/updatePosition',
+    dataType: 'JSON',
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: data,
+    success: function success(response) {
+      loader(false);
+      alertify.alert('Success', 'Gallery position has been saved!');
+    },
+    error: function error(xhr) {
+      console.log(xhr.responseText);
+      loader(false);
+      alertify.alert('Error', 'An error occurred while saving the gallery. Try again later');
+    }
+  });
+}
+
+function getPosition(selector) {
+  var alt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var elems = document.querySelectorAll(selector);
+  elems.forEach(function (elem, i) {
+    elem.setAttribute('data-position', i + 1);
+  });
+  var resultData = {
+    galleryData: []
+  };
+  elems.forEach(function (elem, i) {
+    var obj = {};
+    obj.id = elem.getAttribute('data-id');
+    obj.position = elem.getAttribute('data-position');
+
+    if (alt) {
+      obj.alt = elem.getElementsByTagName('input').alt.value;
+    }
+
+    resultData.galleryData.push(obj);
+  });
+  return resultData;
+}
+
+function updateGallery() {
+  var form = document.querySelector('.gallery_create_form');
+  form.submit();
+}
+
+function saveGalleryPhoto(data) {
+  if (!data.galleryData.length) {
+    alertify.alert('Error', 'You have not added any photos');
+    return false;
+  }
+
+  loader(true);
+  $.ajax({
+    type: 'POST',
+    url: '/admin/galleryPhoto/updateAll',
+    dataType: 'JSON',
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: data,
+    success: function success(response) {
+      loader(false);
+      updateGallery();
+    },
+    error: function error(xhr) {
+      console.log(xhr.responseText);
+      loader(false);
+      alertify.alert('Error', 'An error occurred while saving the gallery. Try again later');
+    }
+  });
+}
+
+function deletePhotoRequest(id) {
+  loader(true);
+  $.ajax({
+    type: 'DELETE',
+    url: '/admin/galleryPhoto/' + id,
+    dataType: 'JSON',
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    success: function success(response) {
+      loader(false);
+      alertify.alert('Success', 'Photo has been deleted!');
+      deletePhotoFromGallery(response.deleted);
+    },
+    error: function error(xhr) {
+      loader(false);
+      alertify.alert('Error', 'An error has occurred. Try again later');
+      console.log(xhr.responseText);
+    }
+  });
+}
+
+function deletePhotoFromGallery(id) {
+  var photo = document.querySelector('div[data-id="' + id + '"]');
+  photo.remove();
+}
+
+function loader(flag) {
+  var loader = document.createElement('div');
+  var cover = document.createElement('div');
+  cover.className = 'body-cover';
+  loader.className = "loader-wrapper";
+  loader.innerHTML = "<div class=\"sk-circle\">\n    <div class=\"sk-circle1 sk-child\"></div>\n    <div class=\"sk-circle2 sk-child\"></div>\n    <div class=\"sk-circle3 sk-child\"></div>\n    <div class=\"sk-circle4 sk-child\"></div>\n    <div class=\"sk-circle5 sk-child\"></div>\n    <div class=\"sk-circle6 sk-child\"></div>\n    <div class=\"sk-circle7 sk-child\"></div>\n    <div class=\"sk-circle8 sk-child\"></div>\n    <div class=\"sk-circle9 sk-child\"></div>\n    <div class=\"sk-circle10 sk-child\"></div>\n    <div class=\"sk-circle11 sk-child\"></div>\n    <div class=\"sk-circle12 sk-child\"></div>\n  </div>";
+  var body = document.querySelector('body');
+
+  if (flag) {
+    body.append(loader);
+    body.append(cover);
+  } else {
+    document.querySelector('.loader-wrapper').remove();
+    document.querySelector('.body-cover').remove();
+  }
+}
+
+var onLoadFile = function onLoadFile(event) {
+  var output = document.querySelector('.thumbnail_preview');
+  document.querySelector('.thumbnail_description').classList.add('active');
+  output.src = URL.createObjectURL(event.target.files[0]);
+};
 
 /***/ }),
 

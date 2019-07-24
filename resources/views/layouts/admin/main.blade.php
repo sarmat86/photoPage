@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="{{asset('css/admin.css')}}"> 
     <title>Admin Panel</title>
 </head>
@@ -21,7 +22,7 @@
         <div class="main">
             <div class="top-bar">
                 <div class='sidebar-toggle-wrapper'>
-                    <button class="hamburger hamburger--arrowturn" type="button">
+                    <button id="sidebar_switcher" class="hamburger hamburger--arrowturn" type="button">
                         <span class="hamburger-box">
                             <span class="hamburger-inner"></span>
                         </span>
@@ -32,8 +33,8 @@
                   <div class="user-options">{{Auth::User()->name}} <i class="icon-angle-down"></i>
                     
                     <div class="dropdown-user">
-                    <a href="{{route('admin.edit')}}">Ustawienia konta</a>
-                        <a href="#" class="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Wyloguj</a>
+                    <a href="{{route('admin.edit')}}">Account settings</a>
+                        <a href="#" class="" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                       </div>
                   
                   </div>
@@ -47,7 +48,9 @@
                 </div>
             </div>
             <div class="content-wrapper container-fluid">
+                    <div class="row">
                 <div class="col-md-12">
+                   
                 <header>
                     <h4> 
                         @yield('header') 
@@ -56,6 +59,7 @@
                   @include('layouts.info')
                 @yield('content')
             </div>
+        </div>
             </div>
         </div>
     </div>
@@ -65,7 +69,10 @@
     </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{{asset('js/admin/libs.js')}}"></script>
     <script src="{{asset('js/admin/admin.js')}}"></script>
+    
 
 </body>
 

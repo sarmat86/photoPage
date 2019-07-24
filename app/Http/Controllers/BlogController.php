@@ -44,7 +44,7 @@ class BlogController extends Controller
     {
         $data = $request->validate([
             'title' => 'required|max:255',
-            'content' => 'required'
+            'content' => 'required',
         ]);
         $input = $request->all();
         if ($file = $request->file('file')) {
@@ -55,7 +55,8 @@ class BlogController extends Controller
             
             $photo = Photo::create([
                 'path' => $path,
-                'size' => $size
+                'size' => $size,
+                'name' => $input['name']
             ]);
 
             $input['photo_id'] = $photo->id;

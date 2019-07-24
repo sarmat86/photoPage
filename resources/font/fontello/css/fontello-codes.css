@@ -14,6 +14,14 @@
 .icon-pencil:before { content: '\e80c'; } /* '' */
 .icon-users:before { content: '\e80d'; } /* '' */
 .icon-users-1:before { content: '\e80e'; } /* '' */
+.icon-website:before { content: '\e80f'; } /* '' */
+.icon-heart:before { content: '\e810'; } /* '' */
+.icon-heart-empty:before { content: '\e811'; } /* '' */
+.icon-star-empty:before { content: '\e812'; } /* '' */
+.icon-star:before { content: '\e813'; } /* '' */
+.icon-picture-1:before { content: '\e814'; } /* '' */
+.icon-camera-alt:before { content: '\e815'; } /* '' */
+.icon-move:before { content: '\f047'; } /* '' */
 .icon-gauge:before { content: '\f0e4'; } /* '' */
 .icon-chat-empty:before { content: '\f0e6'; } /* '' */
 .icon-angle-left:before { content: '\f104'; } /* '' */

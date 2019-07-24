@@ -28,5 +28,11 @@ Route::group(['middleware' => ['admin']], function () {
   Route::resource('admin/categories', 'CategoryController');
   Route::resource('admin/blog', 'BlogController');
   Route::resource('admin/media', 'MediaController');
+  Route::resource('admin/gallery', 'GalleryController');
+  Route::post('admin/gallery/publish', 'GalleryController@publish');
+  Route::post('admin/gallery/updatePosition', 'GalleryController@updatePosition');
+  Route::resource('admin/galleryPhoto', 'GalleryPhotoController');
+  Route::post('admin/galleryPhoto/updateAll', 'GalleryPhotoController@updateAll');
   Route::post('/admin/media/delete', 'MediaController@delete')->name('admin.mediaDelete');
+
 });

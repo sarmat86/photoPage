@@ -8,7 +8,7 @@
     <div style="background: #cccccc;">
     <h3>{{$post->title}}</h3>
     <p>{{$post->title}}</p>
-    <p>Kategoria: {{$post->category_id === null ? 'brak' : $post->category->name }}</p>
+    <p>Kategoria: {{$post->category_id == null  ? 'brak' : $post->category->name }}</p>
     <p><img src="{{$post->photo_id === null ? '' : Storage::url($post->photo->path)}}" alt="{{$post->title}}"></p>
     <p>{!!$post->content!!}</p>
     </div>

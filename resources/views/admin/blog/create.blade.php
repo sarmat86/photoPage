@@ -13,7 +13,7 @@ Create new post
         <div class="col-md-6">
             <div class="form-group">
                 <label for="title">Title </label>
-                <input type="text" name="title" id="name_input" class="form-control">
+                <input type="text" name="title" id="title_input" class="form-control">
             </div>
         </div>
         <div class="col-md-6">
@@ -31,6 +31,17 @@ Create new post
             <div class="form-group">
                 <label for="file" class="d-block">Upload photo</label>
                 <input type="file" name="file" id="file" class="d-block">
+            </div>
+        </div>
+        <div class="col-md-6">
+                <div class="thumbnail_preview_wrapper">
+                <img src="" class="thumbnail_preview">
+                </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group thumbnail_description">
+                <label for="title">Photo description </label>
+                <input type="text" name="name" id="name_input" class="form-control">
             </div>
         </div>
         
