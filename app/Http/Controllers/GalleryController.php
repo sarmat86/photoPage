@@ -41,13 +41,7 @@ class GalleryController extends Controller
         $gallery = Gallery::create([
                 'title' => 'gallery'
         ]);
-
-          //division of pictures in the gallery due to the position -> null or not null
-          $galleryPhotosPos = $gallery->galleryPhoto->filter(function($value, $key){
-            return $value->position != null;  
-            })->sortBy('position');
-        $galleryPhotosPosNull = $gallery->galleryPhoto->where('position', null);
-        return view('admin.gallery.create', compact('gallery', 'galleryPhotosPos', 'galleryPhotosPosNull'));
+        return view('admin.gallery.create', compact('gallery'));
     }
 
     /**
@@ -56,26 +50,7 @@ class GalleryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function publish(Request $request)
-    {
-        $data = $request->all();
-
-      $gallery = Gallery::findOrFail( $data['id']);
-      $confirmed = 0;
-       if (!$gallery->confirmed) {
-        $confirmed = 1;
-       }else{
-        $confirmed = 0; 
-       }
-       $gallery->update(['confirmed' => $confirmed]);
-
-        return response()->json([
-            'succes' => true,
-            'id' =>$gallery->id,
-            'confirmed' => $confirmed 
-          
-        ]);
-    }
+    
 
     /**
      * Display the specified resource.
@@ -123,9 +98,7 @@ class GalleryController extends Controller
                         ->withErrors($validator)
                         ->withInput();
         }
-        // $data = $request->validate([
-        //     'title' => 'required|max:255',
-        // ]);
+      
         $gallery = Gallery::findOrFail($id);
 
         $input = $request->all();
@@ -176,21 +149,5 @@ class GalleryController extends Controller
         $gallery->delete();
         $request->session()->flash('status', 'Gallery has been deleted');
        return redirect()->route('gallery.index');
-    }
-
-    public function updatePosition(Request $request)
-    {
-        $data = $request->all();
-        $items = $data['galleryData'];
-
-        foreach ($items as $key => $item) {
-           $elem = Gallery::findOrFail( $item['id']); 
-           $elem->update([
-               'position' => $item['position'],
-           ]);
-        }
-       return response()->json([
-           'succes' => true
-       ]);
     }
 }

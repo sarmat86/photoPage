@@ -1,12 +1,12 @@
 @extends('layouts.admin.main')
 @section('header')
-Create new gallery
+Create new customer Zone
 @endsection
 @section('content')
 
 <div class="col-md-12">
     <div class="card">
-        <form  action="{{action('GalleryController@update', $gallery->id) }}" class="gallery_create_form" method="POST" enctype="multipart/form-data">
+        <form  action="{{action('CustomerZoneController@update', $customerZone->id) }}" class="gallery_create_form" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PATCH')
             <div class="row">
@@ -22,10 +22,15 @@ Create new gallery
                         <input type="file" name="file" id="file" class="d-block">
                     </div>
                 </div>
-                
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="title">Password</label>
+                        <input type="text" name="password" id="password_input" class="form-control" value="{{$customerZone->password}}">
+                    </div>
+                </div>
                 
                 <div class="col-md-6">
-                        <div class="thumbnail_preview_wrapper">
+                    <div class="thumbnail_preview_wrapper">
                         <img src="" class="thumbnail_preview">
                         <div class="row">
                             <div class="col-md-12">
@@ -35,10 +40,19 @@ Create new gallery
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="title">File with photos (.zip, .rar)</label>
+                        <input type="file" name="file_cszone" id="file_cszone" class="d-block">
+                    </div>
                 </div>
+                
+              
+                
                 <div class=" col-md-12">
-                <div id="galleryPhotosDropZone" data-id="{{$gallery->id}}" data-type="{{'App\Gallery'}}" class="dropzone dropzone-style"></div>
+                    <div id="galleryPhotosDropZone" data-id="{{$customerZone->id}}" data-type="{{'App\CustomerZone'}}" class="dropzone dropzone-style"></div>
                 </div>
                
             </div>
@@ -64,7 +78,7 @@ Create new gallery
 </div>
 </div>
 
-<form hidden class="delete-form" action="{{action('GalleryController@destroy', $gallery->id)}}" method="POST">
+<form hidden class="delete-form" action="{{action('CustomerZoneController@destroy', $customerZone->id)}}" method="POST">
     @csrf
     @method('DELETE')
 </form>

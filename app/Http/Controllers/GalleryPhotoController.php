@@ -47,7 +47,7 @@ class GalleryPhotoController extends Controller
             $input['size'] = $size;
             $input['name'] = $name;
             $input['galleryphotoable_id'] = request()->gallery_id;
-            $input['galleryphotoable_type'] = 'App\Gallery';
+            $input['galleryphotoable_type'] = request()->galleryphotoable_type;
 
              $photo = GalleryPhoto::create($input);
             if ($path) {

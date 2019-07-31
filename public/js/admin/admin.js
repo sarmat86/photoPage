@@ -3688,6 +3688,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (document.getElementsByClassName('dropzone').length) {
     var id = document.querySelector('.dropzone').getAttribute('data-id');
+    var type = document.querySelector('.dropzone').getAttribute('data-type');
     Dropzone.autoDiscover = false;
     galleryDropZone = new Dropzone("#galleryPhotosDropZone", {
       url: "/admin/galleryPhoto",
@@ -3701,7 +3702,8 @@ document.addEventListener("DOMContentLoaded", function () {
       previewTemplate: imgTemplate,
       previewsContainer: '.gallery_photos_wrapper',
       params: {
-        gallery_id: id
+        gallery_id: id,
+        galleryphotoable_type: type
       }
     });
     galleryDropZone.on("success", function (file, response) {
@@ -3793,13 +3795,13 @@ document.addEventListener("DOMContentLoaded", function () {
       form.submit();
     } else if (event.target.matches('.galPhoto__save')) {
       event.preventDefault();
-      saveGalleryPhoto(getPosition('.photo-tile', 1));
+      saveGalleryPhoto(getGalleryData('.photo-tile', 1));
     } else if (event.target.matches('.gallery__publish')) {
       event.preventDefault();
       publishGallery(event.target);
     } else if (event.target.matches('.galPosition__update')) {
       event.preventDefault();
-      updateGalleryPosition(getPosition('.gallery_item'));
+      updateGalleryPosition(getGalleryData('.gallery_item'));
     } else {
       return false;
     }
@@ -3827,16 +3829,18 @@ function updateGalleryButton(target, confirmed) {
 
 function publishGallery(target) {
   var id = target.closest('.gallery_item').getAttribute('data-id');
+  var galleryType = document.querySelector('.gallery_list_wrapper').getAttribute('data-type');
   loader(true);
   $.ajax({
     type: 'POST',
-    url: '/admin/gallery/publish',
+    url: '/admin/publish',
     dataType: 'JSON',
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },
     data: {
-      id: id
+      id: id,
+      galleryType: galleryType
     },
     success: function success(response) {
       loader(false);
@@ -3863,7 +3867,7 @@ function updateGalleryPosition(data) {
   loader(true);
   $.ajax({
     type: 'POST',
-    url: '/admin/gallery/updatePosition',
+    url: '/admin/updatePosition',
     dataType: 'JSON',
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -3881,14 +3885,21 @@ function updateGalleryPosition(data) {
   });
 }
 
-function getPosition(selector) {
+function getGalleryData(selector) {
   var alt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   var elems = document.querySelectorAll(selector);
+  var galleryType = document.querySelector('.gallery_list_wrapper');
+
+  if (galleryType) {
+    galleryType = galleryType.getAttribute('data-type');
+  }
+
   elems.forEach(function (elem, i) {
     elem.setAttribute('data-position', i + 1);
   });
   var resultData = {
-    galleryData: []
+    galleryData: [],
+    galleryType: galleryType
   };
   elems.forEach(function (elem, i) {
     var obj = {};
@@ -3911,7 +3922,7 @@ function updateGallery() {
 
 function saveGalleryPhoto(data) {
   if (!data.galleryData.length) {
-    alertify.alert('Error', 'You have not added any photos');
+    alertify.alert('Error', 'You have not added any photos!');
     return false;
   }
 

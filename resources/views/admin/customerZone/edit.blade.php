@@ -1,12 +1,12 @@
 @extends('layouts.admin.main')
 @section('header')
-Edit gallery
+Edit customer zone
 @endsection
 @section('content')
 
 
     <div class="card">
-        <form action="{{action('GalleryController@update', $gallery->id) }}" class="gallery_create_form" method="POST"
+        <form action="{{action('CustomerZoneController@update', $customerZone->id) }}" class="gallery_create_form" method="POST"
             enctype="multipart/form-data">
             @csrf
             @method('PATCH')
@@ -15,7 +15,7 @@ Edit gallery
                     <div class="form-group">
                         <label for="title">Title</label>
                         <input type="text" name="title" id="title_input" class="form-control"
-                            value="{{$gallery->title}}">
+                            value="{{$customerZone->title}}">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -25,28 +25,42 @@ Edit gallery
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="form-group thumbnail_description {{$gallery->photo_id ? 'active' : ''}}">
-                        <label for="title">Thumbnail description </label>
-                        <input type="text" name="thumbnail" id="thumbnail_input" class="form-control" value="{{$gallery->photo_id ? $gallery->photo->name : ''}}">
+                    <div class="form-group">
+                        <label for="title">Password</label>
+                        <input type="text" name="password" id="password_input" class="form-control" value="{{$customerZone->password}}">
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="thumbnail_preview_wrapper">
-                        <img src="{{$gallery->photo_id ? Storage::url($gallery->photo->path) : ''}}"
-                            class="thumbnail_preview">
+                        <img src="{{$customerZone->photo_id ? Storage::url($customerZone->photo->path) : ''}}" class="thumbnail_preview">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group thumbnail_description {{$customerZone->photo_id ? 'active' : ''}}">
+                                    <label for="title">Thumbnail description </label>
+                                    <input type="text" name="thumbnail" id="thumbnail_input" class="form-control"
+                                        value="{{$customerZone->photo_id ? $customerZone->photo->name : ''}}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="title">File with photos (.zip, .rar)</label>
+                        <input type="file" name="file_cszone" id="file_cszone" class="d-block">
                     </div>
                 </div>
                 <div class=" col-md-12">
-                    <div id="galleryPhotosDropZone" data-id="{{$gallery->id}}" class="dropzone dropzone-style"></div>
+                    <div id="galleryPhotosDropZone" data-id="{{$customerZone->id}}" data-type="{{'App\CustomerZone'}}" class="dropzone dropzone-style"></div>
                 </div>
             </div>
         </form>
-        @if (count($galleryPhotosPos) === 0 && count($galleryPhotosPosNull) === 0)
+        @if (count($customerZonePhotosPos) === 0 && count($customerZonePhotosPosNull) === 0)
         <div class="gallery_photos_wrapper  dropzone-previews "></div>
         @else
 
         <div class="gallery_photos_wrapper  dropzone-previews">
-            @foreach ($galleryPhotosPos as $item)
+            @foreach ($customerZonePhotosPos as $item)
             <div data-id="{{$item->id}}" data-position="{{$item->position}}" class="photo-tile">
                 <div class="move_handle"><i class="icon-move"></i></div>
                 <div class="photo_tile_img_wrapper"><img src="{{Storage::url($item->path)}}"></div>
@@ -60,7 +74,7 @@ Edit gallery
             </div>
             @endforeach
 
-            @foreach ($galleryPhotosPosNull as $item)
+            @foreach ($customerZonePhotosPosNull as $item)
             <div data-id="{{$item->id}}" data-position="" class="photo-tile">
                 <div class="move_handle"><i class="icon-move"></i></div>
                 <div class="photo_tile_img_wrapper"><img src="{{Storage::url($item->path)}}"></div>
@@ -96,7 +110,7 @@ Edit gallery
 </div>
 
 
-<form hidden class="delete-form" action="{{action('GalleryController@destroy', $gallery->id)}}" method="POST">
+<form hidden class="delete-form" action="{{action('CustomerZoneController@destroy', $customerZone->id)}}" method="POST">
     @csrf
     @method('DELETE')
 </form>

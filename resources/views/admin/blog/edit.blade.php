@@ -37,13 +37,16 @@ Edit post
                 <div class="thumbnail_preview_wrapper">
                 <img src="{{$post->photo_id ? Storage::url($post->photo->path) : ''}}" class="thumbnail_preview">
                 </div>
-            </div>
-        <div class="col-md-6">
-        <div class="form-group thumbnail_description {{$post->photo_id ? 'active' : ''}} ">
-                    <label for="title">Photo description </label>
-                <input type="text" name="name" id="name_input" class="form-control" value="{{$post->photo_id !== null ? $post->photo->name : ''}}">
+                <div class="row">
+                    <div class="col-md-6">
+                    <div class="form-group thumbnail_description {{$post->photo_id ? 'active' : ''}} ">
+                                <label for="title">Photo description </label>
+                            <input type="text" name="name" id="name_input" class="form-control" value="{{$post->photo_id !== null ? $post->photo->name : ''}}">
+                            </div>
+                        </div>
                 </div>
             </div>
+        
         <div class="col-md-6">
             <div class="form-group">
                 <label for="file" class="d-block">Upload photo</label>

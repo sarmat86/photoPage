@@ -44,7 +44,7 @@ All media
 </form>
   </div>
 @else
-   <div class="alert alert-info text-center">There isn't any CMS Zones on this page</div>
+   <div class="alert alert-info text-center">There isn't any media on this page</div>
 @endif
 
 @endsection

@@ -19,7 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
     Dropzone.autoDiscover = false;
     let galleryDropZone = null;
     if (document.getElementsByClassName('dropzone').length) {
-        let id = document.querySelector('.dropzone').getAttribute('data-id');
+        const id = document.querySelector('.dropzone').getAttribute('data-id');
+        const type = document.querySelector('.dropzone').getAttribute('data-type');
         Dropzone.autoDiscover = false;
         galleryDropZone = new Dropzone("#galleryPhotosDropZone", {
             url: "/admin/galleryPhoto",
@@ -33,7 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
             previewTemplate: imgTemplate,
             previewsContainer: '.gallery_photos_wrapper',
             params: {
-                gallery_id: id
+                gallery_id: id,
+                galleryphotoable_type: type
             },
         });
         galleryDropZone.on("success", function (file, response) {
@@ -48,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $('textarea').trumbowyg({
         btns: [
-
             ['viewHTML'],
             ['formatting'],
             ['strong', 'em', 'del'],
@@ -122,7 +123,6 @@ document.addEventListener("DOMContentLoaded", function () {
         secondLevel.parentNode.classList.add('active');
     }
 
-
     document.addEventListener('click', function (event) {
         if (event.target.closest('#sidebar_switcher')) {
             event.target.closest('#sidebar_switcher').classList.toggle('is-active');
@@ -141,31 +141,27 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
             var form = document.querySelector('.delete-form');
             form.submit();
-
         } else if (event.target.matches('.galPhoto__save')) {
             event.preventDefault();
-            saveGalleryPhoto(getPosition('.photo-tile', 1));
+            saveGalleryPhoto(getGalleryData('.photo-tile', 1));
         } else if (event.target.matches('.gallery__publish')) {
             event.preventDefault();
             publishGallery(event.target);
-
         } else if (event.target.matches('.galPosition__update')) {
             event.preventDefault();
-            updateGalleryPosition(getPosition('.gallery_item'));
-
+            updateGalleryPosition(getGalleryData('.gallery_item'));
         } else {
             return false;
         }
     });
 
     document.addEventListener('change', function (event) {
-        if (event.target.matches('#file')) {
+        if ( event.target.matches('#file')) {
             onLoadFile(event);
         }else{
             return false;
         }
-    })
-
+    });
 });
 
 function updateGalleryButton(target, confirmed) {
@@ -182,16 +178,18 @@ function updateGalleryButton(target, confirmed) {
 
 function publishGallery(target) {
     const id = target.closest('.gallery_item').getAttribute('data-id');
+    const galleryType = document.querySelector('.gallery_list_wrapper').getAttribute('data-type');
     loader(true);
     $.ajax({
         type: 'POST',
-        url: '/admin/gallery/publish',
+        url: '/admin/publish',
         dataType: 'JSON',
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         data: {
-            id: id
+            id: id,
+            galleryType: galleryType
         },
         success: function (response) {
             loader(false);
@@ -214,11 +212,10 @@ function publishGallery(target) {
 }
 
 function updateGalleryPosition(data) {
-
     loader(true);
     $.ajax({
         type: 'POST',
-        url: '/admin/gallery/updatePosition',
+        url: '/admin/updatePosition',
         dataType: 'JSON',
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -234,16 +231,20 @@ function updateGalleryPosition(data) {
             alertify.alert('Error', 'An error occurred while saving the gallery. Try again later');
         }
     });
-
 }
 
-function getPosition(selector, alt = 0) {
+function getGalleryData(selector, alt = 0) {
     const elems = document.querySelectorAll(selector);
+    let galleryType = document.querySelector('.gallery_list_wrapper');
+    if (galleryType) {
+        galleryType = galleryType.getAttribute('data-type');  
+    }
     elems.forEach((elem, i) => {
         elem.setAttribute('data-position', i + 1);
     });
     let resultData = {
-        galleryData: []
+        galleryData: [],
+        galleryType: galleryType
     };
     elems.forEach((elem, i) => {
         let obj = {};
@@ -255,7 +256,6 @@ function getPosition(selector, alt = 0) {
         }
         resultData.galleryData.push(obj);
     });
-    
     return resultData;
 }
 
@@ -266,7 +266,7 @@ function updateGallery() {
 
 function saveGalleryPhoto(data) {
     if (!data.galleryData.length) {
-        alertify.alert('Error', 'You have not added any photos'); 
+        alertify.alert('Error', 'You have not added any photos!'); 
         return false;
     }
     loader(true);
@@ -288,7 +288,6 @@ function saveGalleryPhoto(data) {
             alertify.alert('Error', 'An error occurred while saving the gallery. Try again later');
         }
     });
-
 }
 
 function deletePhotoRequest(id) {
@@ -348,10 +347,8 @@ function loader(flag) {
     }
 }
 
-
 let onLoadFile = function(event) {
     let output = document.querySelector('.thumbnail_preview');
     document.querySelector('.thumbnail_description').classList.add('active');
     output.src = URL.createObjectURL(event.target.files[0]);
-
 };

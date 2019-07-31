@@ -5,7 +5,7 @@ Create new post
 @section('content')
 
 
-
+<div class="row">
 <div class="form-wrapper col-md-12">
     <form id="post_create_form" action="{{action('BlogController@store')}}" class="card media_upload" method="POST" enctype="multipart/form-data" >
         @csrf
@@ -37,13 +37,16 @@ Create new post
                 <div class="thumbnail_preview_wrapper">
                 <img src="" class="thumbnail_preview">
                 </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group thumbnail_description">
+                            <label for="title">Photo description </label>
+                            <input type="text" name="name" id="thumbnail_input" class="form-control">
+                        </div>
+                    </div>
+                </div>
         </div>
-        <div class="col-md-6">
-            <div class="form-group thumbnail_description">
-                <label for="title">Photo description </label>
-                <input type="text" name="name" id="name_input" class="form-control">
-            </div>
-        </div>
+       
         
         <div class="col-md-12">
             <div class="form-group ">
@@ -57,5 +60,5 @@ Create new post
             </div>
         </form>
       </div>
-
+    </div>
 @endsection

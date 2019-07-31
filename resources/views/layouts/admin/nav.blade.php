@@ -43,8 +43,12 @@
         </li>
         <li><a href="#"><i class="icon-users"></i>Customer zone</a>
             <ul class="nav nav-second-lvl ">
-                <li><a href="#">Create</a></li>
-                <li><a href="#">List of zones</a></li>
+                <li class="{{request()->routeIs('customerZone.create') == 1 ? 'active' : '' }}">
+                    <a href="{{route('customerZone.create')}}">Create</a>
+                </li>
+                <li class="{{request()->routeIs('customerZone.index') == 1 ? 'active' : '' }}">
+                    <a href="{{route('customerZone.index')}}">List of zones</a>
+                </li>
             </ul>
         </li>
     </ul>

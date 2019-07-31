@@ -14191,6 +14191,13 @@ form.gallery_photos_wrapper {
   text-align: center;
   padding: 10px;
   font-weight: 500;
+  margin-bottom: 0;
+}
+
+.gallery_item_pass {
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .gallery_item_thumb {
