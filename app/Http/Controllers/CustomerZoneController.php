@@ -81,13 +81,8 @@ class CustomerZoneController extends Controller
     public function edit($id)
     {
         $customerZone  = CustomerZone::findOrFail($id);
-
-          //division of pictures in the gallery due to the position -> null or not null
-          $customerZonePhotosPos = $customerZone->galleryPhoto->filter(function($value, $key){
-            return $value->position != null;  
-            })->sortBy('position');
-        $customerZonePhotosPosNull = $customerZone->galleryPhoto->where('position', null);
-        return view('admin.customerZone.edit', compact('customerZone', 'customerZonePhotosPos', 'customerZonePhotosPosNull'));
+        $customerZonePhotos = $customerZone->galleryPhoto->sortBy('position');
+        return view('admin.customerZone.edit', compact('customerZone', 'customerZonePhotos'));
     }
 
     /**

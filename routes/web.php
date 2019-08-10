@@ -36,5 +36,6 @@ Route::group(['middleware' => ['admin']], function () {
   Route::post('/admin/media/delete', 'MediaController@delete')->name('admin.mediaDelete');
   Route::post('/admin/updatePosition', 'DataUpdateController@updatePosition');
   Route::post('/admin/publish', 'DataUpdateController@publish');
+  Route::resource('/admin/slides', 'SlideController');
 
 });

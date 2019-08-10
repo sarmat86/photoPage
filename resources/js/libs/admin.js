@@ -158,11 +158,15 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener('change', function (event) {
         if ( event.target.matches('#file')) {
             onLoadFile(event);
+        }
+        else if ( event.target.matches('.file_thumnail')) {
+            onLoadThumbnail(event);
         }else{
             return false;
         }
     });
 });
+
 
 function updateGalleryButton(target, confirmed) {
     if (confirmed) {
@@ -256,6 +260,8 @@ function getGalleryData(selector, alt = 0) {
         }
         resultData.galleryData.push(obj);
     });
+    console.log(resultData);
+    
     return resultData;
 }
 
@@ -351,4 +357,11 @@ let onLoadFile = function(event) {
     let output = document.querySelector('.thumbnail_preview');
     document.querySelector('.thumbnail_description').classList.add('active');
     output.src = URL.createObjectURL(event.target.files[0]);
+};
+
+let onLoadThumbnail = function(event) {
+    const wrapper = event.target.closest('.slide-add-section'); 
+     let output = wrapper.querySelector('.slide_thumbnail');
+    wrapper.querySelector('.thumbnail_description').classList.add('active');
+     output.src = URL.createObjectURL(event.target.files[0]);
 };

@@ -10,6 +10,15 @@
                 </li>
             </ul>
         </li>
+        <li><a ><i class="icon-pencil"></i>Slider</a>
+            <ul class="nav nav-second-lvl">
+                <li class="{{request()->routeIs('slides.create') == 1 ? 'active' : '' }}">
+                <a href="{{route('slides.create')}}">Create slide</a></li>
+            <li class="{{request()->routeIs('CmsZone.index') == 1 ? 'active' : '' }}">
+                <a href="{{route('slides.index')}}">Slides list</a>
+            </li>
+            </ul>
+        </li>
         <li><a ><i class="icon-pencil"></i>CMS zones</a>
             <ul class="nav nav-second-lvl">
                 <li class="{{request()->routeIs('CmsZone.create') == 1 ? 'active' : '' }}">

@@ -72,18 +72,13 @@ class GalleryController extends Controller
     public function edit($id)
     {
         $gallery  = Gallery::findOrFail($id);
-
-          //division of pictures in the gallery due to the position -> null or not null
-          $galleryPhotosPos = $gallery->galleryPhoto->filter(function($value, $key){
-            return $value->position != null;  
-            })->sortBy('position');
-        $galleryPhotosPosNull = $gallery->galleryPhoto->where('position', null);
-        return view('admin.gallery.edit', compact('gallery', 'galleryPhotosPos', 'galleryPhotosPosNull'));
+        $galleryPhotos = $gallery->galleryPhoto->sortBy('position');
+        return view('admin.gallery.edit', compact('gallery', 'galleryPhotos'));
     }
 
     /**
      * Update the specified resource in storage.
-     *
+     * 
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response

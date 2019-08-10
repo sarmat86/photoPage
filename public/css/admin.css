@@ -13853,6 +13853,10 @@ body.trumbowyg-body-fullscreen {
   display: inline-block;
 }
 
+.jumbotron {
+  padding: 2rem 1rem;
+}
+
 img {
   max-width: 100%;
 }
@@ -14226,5 +14230,16 @@ img.thumbnail_preview {
 
 .thumbnail_description.active {
   display: block;
+}
+
+.slide-add-section {
+  margin-bottom: 30px;
+}
+
+.slide-add-label {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 500;
 }
 

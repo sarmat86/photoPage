@@ -20,6 +20,7 @@ class CreateMediaTable extends Migration
             $table->integer('size')->nullable();
             $table->integer('imageable_id')->nullable();
             $table->string('imageable_type')->nullable();
+            $table->integer('screen')->nullable();
             $table->timestamps();
         });
     }

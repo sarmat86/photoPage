@@ -18,6 +18,9 @@ class DataUpdateController extends Controller
         }elseif ($type === 'gallery') {
             $model = 'App\Gallery';
         }
+        elseif ($type === 'slider') {
+            $model = 'App\Slide';
+        }
 
         foreach ($items as $key => $item) {
            $elem = $model::findOrFail( $item['id']); 
@@ -38,6 +41,9 @@ class DataUpdateController extends Controller
             $model = 'App\CustomerZone';
         }elseif ($type === 'gallery') {
             $model = 'App\Gallery';
+        }
+        elseif ($type === 'slider') {
+            $model = 'App\Slide';
         }
 
 

@@ -9,6 +9,9 @@ if (! function_exists('nameModelFormatted')) {
         }elseif ($str === 'App\CmsZone') {
           $result = 'CMS';
         }
+        elseif ($str === 'App\Slide') {
+            $result = 'Slider';
+          }
 
         return $result;
     }

@@ -41,27 +41,13 @@ Edit gallery
                 </div>
             </div>
         </form>
-        @if (count($galleryPhotosPos) === 0 && count($galleryPhotosPosNull) === 0)
+        @if (count($galleryPhotos) === 0)
         <div class="gallery_photos_wrapper  dropzone-previews "></div>
         @else
 
         <div class="gallery_photos_wrapper  dropzone-previews">
-            @foreach ($galleryPhotosPos as $item)
+            @foreach ($galleryPhotos as $item)
             <div data-id="{{$item->id}}" data-position="{{$item->position}}" class="photo-tile">
-                <div class="move_handle"><i class="icon-move"></i></div>
-                <div class="photo_tile_img_wrapper"><img src="{{Storage::url($item->path)}}"></div>
-                <div class="photo_tile_btns__wrapper">
-                    <a href="#" class="btn btn-danger galPhoto__del"><i class="icon-trash-empty"></i></a>
-                </div>
-                <div class="photo_tile_input_wrapper">
-                    <input type="text" name="alt" placeholder="photo description"
-                        value="{{$item->alt !== null ? $item->alt : ''}}">
-                </div>
-            </div>
-            @endforeach
-
-            @foreach ($galleryPhotosPosNull as $item)
-            <div data-id="{{$item->id}}" data-position="" class="photo-tile">
                 <div class="move_handle"><i class="icon-move"></i></div>
                 <div class="photo_tile_img_wrapper"><img src="{{Storage::url($item->path)}}"></div>
                 <div class="photo_tile_btns__wrapper">
