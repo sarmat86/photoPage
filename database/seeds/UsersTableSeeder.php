@@ -13,6 +13,7 @@ class UsersTableSeeder extends Seeder
     {
         DB::table('users')->truncate();
         DB::table('roles')->truncate();
+        DB::table('settings')->truncate();
 
         DB::table('users')->insert([
                 'name' => 'admin',
@@ -20,9 +21,15 @@ class UsersTableSeeder extends Seeder
                 'password' => bcrypt('Qwerty12'),
                 'role_id' => 1
         ]);
-        DB::table('roles')->insert([
+        DB::table('roles')->insert([        
             ['name' => 'admin'],
             ['name' => 'user']
-    ]);
+         ]);
+         DB::table('settings')->insert([        
+            [
+                'name' => 'instagram',
+                'value' => ''
+            ]
+         ]);
     }
 }

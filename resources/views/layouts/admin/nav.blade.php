@@ -8,6 +8,9 @@
                 <li class="{{request()->routeIs('media.index') == 1 ? 'active' : '' }}">
                     <a href="{{route('media.index')}}">Media</a>
                 </li>
+                <li class="{{request()->routeIs('editInstagram') == 1 ? 'active' : '' }}">
+                        <a href="{{route('editInstagram')}}">Instagram token</a>
+                    </li>
             </ul>
         </li>
         <li><a ><i class="icon-pencil"></i>Slider</a>
