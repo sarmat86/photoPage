@@ -25,7 +25,7 @@ Create new CMS zone
           <div class="col-md-12">
               <div class="form-group ">
                   <label for="content">Content</label>
-                  <textarea name="content" id="content_textarea"  rows="10"></textarea>
+                  <textarea name="content" id="content_textarea "  rows="10" class="trumbArea"></textarea>
               </div>
           </div>
         </div>

@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $.trumbowyg.svgPath = '/fonts/trumbowyg/icons.svg';
 
-    $('textarea').trumbowyg({
+    $('.trumbArea').trumbowyg({
         btns: [
             ['viewHTML'],
             ['formatting'],
@@ -354,8 +354,11 @@ function loader(flag) {
 }
 
 let onLoadFile = function(event) {
-    let output = document.querySelector('.thumbnail_preview');
-    document.querySelector('.thumbnail_description').classList.add('active');
+    const output = document.querySelector('.thumbnail_preview');
+    const thumDesc = document.querySelector('.thumbnail_description');
+    if (thumDesc) {
+        thumDesc.classList.add('active');
+    }
     output.src = URL.createObjectURL(event.target.files[0]);
 };
 

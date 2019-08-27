@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Category;
 use App\Blog;
 use App\CmsZone;
+use App\Slide;
 
 class HomeController extends Controller
 {
@@ -29,6 +30,8 @@ class HomeController extends Controller
         $categories = Category::all();
         $posts = Blog::all();
         $cmsZones = CmsZone::all();
-        return view('front.home', compact('categories', 'posts', 'cmsZones'));
+        $slides = Slide::where('confirmed', 1)->get()->sortBy('position');
+        $settings = getPageSettings();
+        return view('front.home', compact('categories', 'posts', 'cmsZones', 'slides', 'settings'));
     }
 }

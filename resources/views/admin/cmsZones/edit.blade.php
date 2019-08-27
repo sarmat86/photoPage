@@ -24,7 +24,7 @@ Edit CMS zone
           <div class="col-md-12">
               <div class="form-group ">
                   <label for="content">Content</label>
-                  <textarea name="content" id="content_textarea"  rows="10">{{$cmsZone->content}}</textarea>
+                  <textarea name="content" id="content_textarea"  rows="10" class="trumbArea">{{$cmsZone->content}}</textarea>
               </div>
           </div>
         </div>

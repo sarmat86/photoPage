@@ -8,16 +8,19 @@
                 <li class="{{request()->routeIs('media.index') == 1 ? 'active' : '' }}">
                     <a href="{{route('media.index')}}">Media</a>
                 </li>
-                <li class="{{request()->routeIs('editInstagram') == 1 ? 'active' : '' }}">
-                        <a href="{{route('editInstagram')}}">Instagram token</a>
-                    </li>
+                <li class="{{request()->routeIs('editSettings') == 1 ? 'active' : '' }}">
+                        <a href="{{route('editSettings')}}">Edit settings</a>
+                </li>
+                <li class="{{request()->routeIs('editAdditions') == 1 ? 'active' : '' }}">
+                        <a href="{{route('editAdditions')}}">Scripts & CSS</a>
+                </li>
             </ul>
         </li>
         <li><a ><i class="icon-pencil"></i>Slider</a>
             <ul class="nav nav-second-lvl">
                 <li class="{{request()->routeIs('slides.create') == 1 ? 'active' : '' }}">
                 <a href="{{route('slides.create')}}">Create slide</a></li>
-            <li class="{{request()->routeIs('CmsZone.index') == 1 ? 'active' : '' }}">
+            <li class="{{request()->routeIs('slides.index') == 1 ? 'active' : '' }}">
                 <a href="{{route('slides.index')}}">Slides list</a>
             </li>
             </ul>

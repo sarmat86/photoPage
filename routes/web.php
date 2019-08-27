@@ -37,7 +37,11 @@ Route::group(['middleware' => ['admin']], function () {
   Route::post('/admin/updatePosition', 'DataUpdateController@updatePosition');
   Route::post('/admin/publish', 'DataUpdateController@publish');
   Route::resource('/admin/slides', 'SlideController');
-  Route::post('admin/updateInstagramToken', 'SettingsController@updateInstagramToken')->name('updateInstagramToken');
-  Route::get('admin/editInstagram', 'SettingsController@editInstagram')->name('editInstagram');
+  Route::get('admin/settings', 'SettingsController@editSettings')->name('editSettings');
+  Route::post('admin/updateSettings', 'SettingsController@updateSettings')->name('updateSettings');
+  Route::post('admin/updateSettings/updateContactData', 'SettingsController@updateContactData')->name('updateContactData');
+  Route::get('admin/additions', 'SettingsController@editAdditions')->name('editAdditions');
+  Route::post('admin/updateFavicon', 'SettingsController@updateFavicon')->name('updateFavicon');
+
 
 });

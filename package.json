@@ -23,6 +23,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "tiny-slider": "^2.9.2",
         "trumbowyg": "^2.18.0"
     }
 }

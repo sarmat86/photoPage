@@ -1,0 +1,120 @@
+@import '../css/tinySlider.css';
+@import 'font.css';
+
+*{
+  margin: 0;
+  padding: 0;
+}
+#home_page .main-section {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+#btn-wrapper {
+  display: none;
+}
+
+.main-slider {
+  height: 100%;
+}
+
+.slider-wrapper {
+  position: relative;
+}
+.slides{
+  display: block;
+}
+
+
+.tns-controls {
+  position: absolute;
+  top:0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.tns-controls button {
+  background: transparent;
+  color: #fff;
+  outline: none;
+  border: none;
+  font-size: 25px;
+}
+
+/****************/
+
+.social {
+  position: absolute;
+  top: 50px;
+  right: 5%;
+  z-index: 10;
+}
+
+.social li {
+  list-style-type: none;
+  margin: 0 10px;
+  display: inline-block;
+}
+.link {
+  color: white;
+  text-decoration: none;
+}
+
+
+nav {
+  width: 100%;
+  position: absolute;
+  bottom: 80px;
+  color: white;
+  text-align: center;
+  font-size: 1rem;
+  z-index: 10;
+  text-transform: uppercase;
+}
+
+.menu {
+  width: 70%;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu ul {
+  display: flex;
+  justify-content: space-between;
+}
+
+.menu ul li {
+  list-style-type: none;
+}
+
+.link {
+  color: white;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #F3E0C8;
+}
+
+.menu a {
+  color: inherit;
+  transition: 0.3s;
+}
+
+#viewType {
+  width: 1px;
+
+  @media only screen and (min-width: 768px){
+    width: 2px;
+  }
+
+  @media only screen and(min-width: 1200px){
+    width: 4px;
+  }
+    
+}

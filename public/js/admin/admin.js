@@ -3715,7 +3715,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   $.trumbowyg.svgPath = '/fonts/trumbowyg/icons.svg';
-  $('textarea').trumbowyg({
+  $('.trumbArea').trumbowyg({
     btns: [['viewHTML'], ['formatting'], ['strong', 'em', 'del'], ['link'], ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'], ['unorderedList', 'orderedList'], ['horizontalRule'], ['removeformat'], ['fullscreen'], ['upload'], ['emoji']],
     plugins: {
       upload: {
@@ -3996,7 +3996,12 @@ function loader(flag) {
 
 var onLoadFile = function onLoadFile(event) {
   var output = document.querySelector('.thumbnail_preview');
-  document.querySelector('.thumbnail_description').classList.add('active');
+  var thumDesc = document.querySelector('.thumbnail_description');
+
+  if (thumDesc) {
+    thumDesc.classList.add('active');
+  }
+
   output.src = URL.createObjectURL(event.target.files[0]);
 };
 
@@ -4031,16 +4036,28 @@ var onLoadThumbnail = function onLoadThumbnail(event) {
 
 /***/ }),
 
+/***/ "./resources/sass/main.scss":
+/*!**********************************!*\
+  !*** ./resources/sass/main.scss ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
 /***/ 0:
-/*!************************************************************************************************!*\
-  !*** multi ./resources/js/libs/admin.js ./resources/sass/app.scss ./resources/sass/admin.scss ***!
-  \************************************************************************************************/
+/*!***************************************************************************************************************************!*\
+  !*** multi ./resources/js/libs/admin.js ./resources/sass/app.scss ./resources/sass/admin.scss ./resources/sass/main.scss ***!
+  \***************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! C:\xampp\htdocs\www\photoPage\resources\js\libs\admin.js */"./resources/js/libs/admin.js");
 __webpack_require__(/*! C:\xampp\htdocs\www\photoPage\resources\sass\app.scss */"./resources/sass/app.scss");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\www\photoPage\resources\sass\admin.scss */"./resources/sass/admin.scss");
+__webpack_require__(/*! C:\xampp\htdocs\www\photoPage\resources\sass\admin.scss */"./resources/sass/admin.scss");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\www\photoPage\resources\sass\main.scss */"./resources/sass/main.scss");
 
 
 /***/ })

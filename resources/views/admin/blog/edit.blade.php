@@ -58,7 +58,7 @@ Edit post
         
         <div class="col-md-12">
             <div class="form-group ">
-            <textarea name="content" id="content_textarea"  rows="10">{{$post->content}}</textarea>
+            <textarea name="content" id="content_textarea" class="trumbArea"  rows="10">{{$post->content}}</textarea>
             </div>
         </div>
       </div>

@@ -50,7 +50,7 @@ Create new post
         
         <div class="col-md-12">
             <div class="form-group ">
-                <textarea name="content" id="content_textarea"  rows="10"></textarea>
+                <textarea name="content" id="content_textarea" class="trumbArea"  rows="10"></textarea>
             </div>
         </div>
       </div>
