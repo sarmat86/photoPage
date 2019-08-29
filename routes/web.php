@@ -40,6 +40,7 @@ Route::group(['middleware' => ['admin']], function () {
   Route::get('admin/settings', 'SettingsController@editSettings')->name('editSettings');
   Route::post('admin/updateSettings', 'SettingsController@updateSettings')->name('updateSettings');
   Route::post('admin/updateSettings/updateContactData', 'SettingsController@updateContactData')->name('updateContactData');
+  Route::get('admin/updateSettings/clearCache', 'SettingsController@clearCache')->name('clearCache');
   Route::get('admin/additions', 'SettingsController@editAdditions')->name('editAdditions');
   Route::post('admin/updateFavicon', 'SettingsController@updateFavicon')->name('updateFavicon');
 

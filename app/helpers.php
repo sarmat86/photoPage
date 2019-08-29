@@ -1,6 +1,8 @@
 <?php
 
 use App\Settings;
+use Illuminate\Support\Facades\Cache;
+
 
 if (! function_exists('nameModelFormatted')) {
     function formatModelName($str)
@@ -49,30 +51,36 @@ function formatSizeUnits($bytes)
         return $bytes;
 }
 }
-function getPageSettings(){
-    $data = Settings::all();
-    $settings = [
-        'instaToken' =>  $data->where('name', 'instagram_token')->first(),
-        'instaLink' => $data->where('name', 'instagram_link')->first(),
-        'fbLink' => $data->where('name', 'facebook_link')->first(),
-        'pageTitle' => $data->where('name', 'page_title')->first(),
-        'metaKeywords' => $data->where('name', 'meta_keywords')->first(),
-        'metaDescription' => $data->where('name', 'meta_description')->first(),
-        'additionsHead' => $data->where('name', 'additions_head')->first(),
-        'additionsBodyTop' => $data->where('name', 'additions_body_top')->first(),
-        'additionsBodyBottom' => $data->where('name', 'additions_body_bottom')->first(),
-        'favicon' => $data->where('name', 'favicon')->first(),
-        'contactPhone' => $data->where('name', 'contact_phone')->first(),
-        'contactEmail' => $data->where('name', 'contact_email')->first(),
 
-    ];
-    foreach ($settings as $key => $item) {
-        if ($item) {
-         $settings[$key] =  $item->value;
-        }else{
-            $settings[$key] = '';
+function getPageSettings(){
+    $settings = null;
+    if(Cache::has('pageSettings')){
+        $settings = Cache::get('pageSettings');
+    }else{
+        $data = Settings::all();
+        $settings = [
+            'instaToken' =>  $data->where('name', 'instagram_token')->first(),
+            'instaLink' => $data->where('name', 'instagram_link')->first(),
+            'fbLink' => $data->where('name', 'facebook_link')->first(),
+            'pageTitle' => $data->where('name', 'page_title')->first(),
+            'metaKeywords' => $data->where('name', 'meta_keywords')->first(),
+            'metaDescription' => $data->where('name', 'meta_description')->first(),
+            'additionsHead' => $data->where('name', 'additions_head')->first(),
+            'additionsBodyTop' => $data->where('name', 'additions_body_top')->first(),
+            'additionsBodyBottom' => $data->where('name', 'additions_body_bottom')->first(),
+            'favicon' => $data->where('name', 'favicon')->first(),
+            'contactPhone' => $data->where('name', 'contact_phone')->first(),
+            'contactEmail' => $data->where('name', 'contact_email')->first(),
+    
+        ];
+        foreach ($settings as $key => $item) {
+            if ($item) {
+             $settings[$key] =  $item->value;
+            }else{
+                $settings[$key] = '';
+            }
         }
+        Cache::put('pageSettings', $settings, 300);
     }
     return $settings;
-
 }

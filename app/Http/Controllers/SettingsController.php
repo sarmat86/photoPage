@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Settings;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
@@ -45,12 +46,6 @@ class SettingsController extends Controller
     
     public function updateFavicon(Request $request){
 
-        // $data = $request->validate([
-        //     'file' => 'required'//|dimensions:width=16,height=16',
-        // ]);
-        // $file = $request->file('file');
-        // dd($request);
-
         if ($file = $request->file('file')) {
 
             $item = Settings::where('name', 'favicon')->first();
@@ -90,6 +85,13 @@ class SettingsController extends Controller
         $email ? $email->update(['value' => $data['email']]) : Settings::create(['name' => 'contact_email','value' => $data['email']]);
         return redirect()->back();
     }
+
+    public function clearCache(Request $request){
+        Cache::forget('pageSettings');
+        $request->session()->flash('status', 'Cache has been cleared.');
+         return redirect()->back();
+    }
+    
     
     
 }

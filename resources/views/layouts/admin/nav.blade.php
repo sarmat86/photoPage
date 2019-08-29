@@ -14,6 +14,9 @@
                 <li class="{{request()->routeIs('editAdditions') == 1 ? 'active' : '' }}">
                         <a href="{{route('editAdditions')}}">Scripts & CSS</a>
                 </li>
+                <li>
+                    <a href="{{route('clearCache')}}">Clear cache</a>
+                </li>
             </ul>
         </li>
         <li><a ><i class="icon-pencil"></i>Slider</a>
