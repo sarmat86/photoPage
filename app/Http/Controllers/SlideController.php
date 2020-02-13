@@ -109,34 +109,33 @@ class SlideController extends Controller
         ]);
 
         $slide = Slide::findOrFail($id);
-        $photos = [];
-        
         $input = $request->all();
-        
-        foreach($request->files as $key => $file){
+        $photoNames = [4 => $input['4_name'], 2 => $input['2_name'], 1 => $input['1_name']];
+    
+        foreach($photoNames as $key => $value){
+            
             $currentPhoto = $slide->image->where('screen', $key)->first();
-            if ($currentPhoto) {
+            $settings = [   
+                    'imageable_id' => $slide->id,
+                    'imageable_type' => 'App\Slide',
+                    'screen' => $key,
+                    'name' => $value,
+            ];
+            if($file = $request->file($key)){
+              
                 if (Storage::exists($currentPhoto->path)) {
                     Storage::delete($currentPhoto->path);
                 }
-                $currentPhoto->delete();
+                $nameForPath =  $key.'_'.time().'_'.$file->getClientOriginalName();
+                $size = $file->getClientSize();
+                $path = $request->file($key)->storeAs('slider_photos', $nameForPath, 'public');
+                $settings['size'] = $size; 
+                $settings['path'] = $path;
             }
-            $name =  $input[$key.'_name'];
-            $nameForPath =  $key.'_'.time().'_'.$file->getClientOriginalName();
-            $size = $file->getClientSize();
-            $path = $request->file($key)->storeAs('slider_photos', $nameForPath, 'public');
-            array_push($photos, 
-            Media::create([ 
-                'name' => $name,
-                'path' => $path,
-                'size' => $size,
-                'imageable_id' => $slide->id,
-                'imageable_type' => 'App\Slide',
-                'screen' => $key
-                ])
-            );
-        } 
-        $slide->image()->saveMany($photos);
+            $currentPhoto->update($settings);
+        }
+
+        $slide->update($input);
         $request->session()->flash('status', 'Slide has been update');
         return redirect()->route('slides.index');
     }

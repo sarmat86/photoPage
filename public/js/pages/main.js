@@ -86,6 +86,764 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/blazy/blazy.js":
+/*!*************************************!*\
+  !*** ./node_modules/blazy/blazy.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+  hey, [be]Lazy.js - v1.8.2 - 2016.10.25
+  A fast, small and dependency free lazy load script (https://github.com/dinbror/blazy)
+  (c) Bjoern Klinggaard - @bklinggaard - http://dinbror.dk/blazy
+*/
+;
+(function(root, blazy) {
+    if (true) {
+        // AMD. Register bLazy as an anonymous module
+        !(__WEBPACK_AMD_DEFINE_FACTORY__ = (blazy),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {}
+})(this, function() {
+    'use strict';
+
+    //private vars
+    var _source, _viewport, _isRetina, _supportClosest, _attrSrc = 'src', _attrSrcset = 'srcset';
+
+    // constructor
+    return function Blazy(options) {
+        //IE7- fallback for missing querySelectorAll support
+        if (!document.querySelectorAll) {
+            var s = document.createStyleSheet();
+            document.querySelectorAll = function(r, c, i, j, a) {
+                a = document.all, c = [], r = r.replace(/\[for\b/gi, '[htmlFor').split(',');
+                for (i = r.length; i--;) {
+                    s.addRule(r[i], 'k:v');
+                    for (j = a.length; j--;) a[j].currentStyle.k && c.push(a[j]);
+                    s.removeRule(0);
+                }
+                return c;
+            };
+        }
+
+        //options and helper vars
+        var scope = this;
+        var util = scope._util = {};
+        util.elements = [];
+        util.destroyed = true;
+        scope.options = options || {};
+        scope.options.error = scope.options.error || false;
+        scope.options.offset = scope.options.offset || 100;
+        scope.options.root = scope.options.root || document;
+        scope.options.success = scope.options.success || false;
+        scope.options.selector = scope.options.selector || '.b-lazy';
+        scope.options.separator = scope.options.separator || '|';
+        scope.options.containerClass = scope.options.container;
+        scope.options.container = scope.options.containerClass ? document.querySelectorAll(scope.options.containerClass) : false;
+        scope.options.errorClass = scope.options.errorClass || 'b-error';
+        scope.options.breakpoints = scope.options.breakpoints || false;
+        scope.options.loadInvisible = scope.options.loadInvisible || false;
+        scope.options.successClass = scope.options.successClass || 'b-loaded';
+        scope.options.validateDelay = scope.options.validateDelay || 25;
+        scope.options.saveViewportOffsetDelay = scope.options.saveViewportOffsetDelay || 50;
+        scope.options.srcset = scope.options.srcset || 'data-srcset';
+        scope.options.src = _source = scope.options.src || 'data-src';
+        _supportClosest = Element.prototype.closest;
+        _isRetina = window.devicePixelRatio > 1;
+        _viewport = {};
+        _viewport.top = 0 - scope.options.offset;
+        _viewport.left = 0 - scope.options.offset;
+
+
+        /* public functions
+         ************************************/
+        scope.revalidate = function() {
+            initialize(scope);
+        };
+        scope.load = function(elements, force) {
+            var opt = this.options;
+            if (elements && elements.length === undefined) {
+                loadElement(elements, force, opt);
+            } else {
+                each(elements, function(element) {
+                    loadElement(element, force, opt);
+                });
+            }
+        };
+        scope.destroy = function() {            
+            var util = scope._util;
+            if (scope.options.container) {
+                each(scope.options.container, function(object) {
+                    unbindEvent(object, 'scroll', util.validateT);
+                });
+            }
+            unbindEvent(window, 'scroll', util.validateT);
+            unbindEvent(window, 'resize', util.validateT);
+            unbindEvent(window, 'resize', util.saveViewportOffsetT);
+            util.count = 0;
+            util.elements.length = 0;
+            util.destroyed = true;
+        };
+
+        //throttle, ensures that we don't call the functions too often
+        util.validateT = throttle(function() {
+            validate(scope);
+        }, scope.options.validateDelay, scope);
+        util.saveViewportOffsetT = throttle(function() {
+            saveViewportOffset(scope.options.offset);
+        }, scope.options.saveViewportOffsetDelay, scope);
+        saveViewportOffset(scope.options.offset);
+
+        //handle multi-served image src (obsolete)
+        each(scope.options.breakpoints, function(object) {
+            if (object.width >= window.screen.width) {
+                _source = object.src;
+                return false;
+            }
+        });
+
+        // start lazy load
+        setTimeout(function() {
+            initialize(scope);
+        }); // "dom ready" fix
+
+    };
+
+
+    /* Private helper functions
+     ************************************/
+    function initialize(self) {
+        var util = self._util;
+        // First we create an array of elements to lazy load
+        util.elements = toArray(self.options);
+        util.count = util.elements.length;
+        // Then we bind resize and scroll events if not already binded
+        if (util.destroyed) {
+            util.destroyed = false;
+            if (self.options.container) {
+                each(self.options.container, function(object) {
+                    bindEvent(object, 'scroll', util.validateT);
+                });
+            }
+            bindEvent(window, 'resize', util.saveViewportOffsetT);
+            bindEvent(window, 'resize', util.validateT);
+            bindEvent(window, 'scroll', util.validateT);
+        }
+        // And finally, we start to lazy load.
+        validate(self);
+    }
+
+    function validate(self) {
+        var util = self._util;
+        for (var i = 0; i < util.count; i++) {
+            var element = util.elements[i];
+            if (elementInView(element, self.options) || hasClass(element, self.options.successClass)) {
+                self.load(element);
+                util.elements.splice(i, 1);
+                util.count--;
+                i--;
+            }
+        }
+        if (util.count === 0) {
+            self.destroy();
+        }
+    }
+
+    function elementInView(ele, options) {
+        var rect = ele.getBoundingClientRect();
+
+        if(options.container && _supportClosest){
+            // Is element inside a container?
+            var elementContainer = ele.closest(options.containerClass);
+            if(elementContainer){
+                var containerRect = elementContainer.getBoundingClientRect();
+                // Is container in view?
+                if(inView(containerRect, _viewport)){
+                    var top = containerRect.top - options.offset;
+                    var right = containerRect.right + options.offset;
+                    var bottom = containerRect.bottom + options.offset;
+                    var left = containerRect.left - options.offset;
+                    var containerRectWithOffset = {
+                        top: top > _viewport.top ? top : _viewport.top,
+                        right: right < _viewport.right ? right : _viewport.right,
+                        bottom: bottom < _viewport.bottom ? bottom : _viewport.bottom,
+                        left: left > _viewport.left ? left : _viewport.left
+                    };
+                    // Is element in view of container?
+                    return inView(rect, containerRectWithOffset);
+                } else {
+                    return false;
+                }
+            }
+        }      
+        return inView(rect, _viewport);
+    }
+
+    function inView(rect, viewport){
+        // Intersection
+        return rect.right >= viewport.left &&
+               rect.bottom >= viewport.top && 
+               rect.left <= viewport.right && 
+               rect.top <= viewport.bottom;
+    }
+
+    function loadElement(ele, force, options) {
+        // if element is visible, not loaded or forced
+        if (!hasClass(ele, options.successClass) && (force || options.loadInvisible || (ele.offsetWidth > 0 && ele.offsetHeight > 0))) {
+            var dataSrc = getAttr(ele, _source) || getAttr(ele, options.src); // fallback to default 'data-src'
+            if (dataSrc) {
+                var dataSrcSplitted = dataSrc.split(options.separator);
+                var src = dataSrcSplitted[_isRetina && dataSrcSplitted.length > 1 ? 1 : 0];
+                var srcset = getAttr(ele, options.srcset);
+                var isImage = equal(ele, 'img');
+                var parent = ele.parentNode;
+                var isPicture = parent && equal(parent, 'picture');
+                // Image or background image
+                if (isImage || ele.src === undefined) {
+                    var img = new Image();
+                    // using EventListener instead of onerror and onload
+                    // due to bug introduced in chrome v50 
+                    // (https://productforums.google.com/forum/#!topic/chrome/p51Lk7vnP2o)
+                    var onErrorHandler = function() {
+                        if (options.error) options.error(ele, "invalid");
+                        addClass(ele, options.errorClass);
+                        unbindEvent(img, 'error', onErrorHandler);
+                        unbindEvent(img, 'load', onLoadHandler);
+                    };
+                    var onLoadHandler = function() {
+                        // Is element an image
+                        if (isImage) {
+                            if(!isPicture) {
+                                handleSources(ele, src, srcset);
+                            }
+                        // or background-image
+                        } else {
+                            ele.style.backgroundImage = 'url("' + src + '")';
+                        }
+                        itemLoaded(ele, options);
+                        unbindEvent(img, 'load', onLoadHandler);
+                        unbindEvent(img, 'error', onErrorHandler);
+                    };
+                    
+                    // Picture element
+                    if (isPicture) {
+                        img = ele; // Image tag inside picture element wont get preloaded
+                        each(parent.getElementsByTagName('source'), function(source) {
+                            handleSource(source, _attrSrcset, options.srcset);
+                        });
+                    }
+                    bindEvent(img, 'error', onErrorHandler);
+                    bindEvent(img, 'load', onLoadHandler);
+                    handleSources(img, src, srcset); // Preload
+
+                } else { // An item with src like iframe, unity games, simpel video etc
+                    ele.src = src;
+                    itemLoaded(ele, options);
+                }
+            } else {
+                // video with child source
+                if (equal(ele, 'video')) {
+                    each(ele.getElementsByTagName('source'), function(source) {
+                        handleSource(source, _attrSrc, options.src);
+                    });
+                    ele.load();
+                    itemLoaded(ele, options);
+                } else {
+                    if (options.error) options.error(ele, "missing");
+                    addClass(ele, options.errorClass);
+                }
+            }
+        }
+    }
+
+    function itemLoaded(ele, options) {
+        addClass(ele, options.successClass);
+        if (options.success) options.success(ele);
+        // cleanup markup, remove data source attributes
+        removeAttr(ele, options.src);
+        removeAttr(ele, options.srcset);
+        each(options.breakpoints, function(object) {
+            removeAttr(ele, object.src);
+        });
+    }
+
+    function handleSource(ele, attr, dataAttr) {
+        var dataSrc = getAttr(ele, dataAttr);
+        if (dataSrc) {
+            setAttr(ele, attr, dataSrc);
+            removeAttr(ele, dataAttr);
+        }
+    }
+
+    function handleSources(ele, src, srcset){
+        if(srcset) {
+            setAttr(ele, _attrSrcset, srcset); //srcset
+        }
+        ele.src = src; //src 
+    }
+
+    function setAttr(ele, attr, value){
+        ele.setAttribute(attr, value);
+    }
+
+    function getAttr(ele, attr) {
+        return ele.getAttribute(attr);
+    }
+
+    function removeAttr(ele, attr){
+        ele.removeAttribute(attr); 
+    }
+
+    function equal(ele, str) {
+        return ele.nodeName.toLowerCase() === str;
+    }
+
+    function hasClass(ele, className) {
+        return (' ' + ele.className + ' ').indexOf(' ' + className + ' ') !== -1;
+    }
+
+    function addClass(ele, className) {
+        if (!hasClass(ele, className)) {
+            ele.className += ' ' + className;
+        }
+    }
+
+    function toArray(options) {
+        var array = [];
+        var nodelist = (options.root).querySelectorAll(options.selector);
+        for (var i = nodelist.length; i--; array.unshift(nodelist[i])) {}
+        return array;
+    }
+
+    function saveViewportOffset(offset) {
+        _viewport.bottom = (window.innerHeight || document.documentElement.clientHeight) + offset;
+        _viewport.right = (window.innerWidth || document.documentElement.clientWidth) + offset;
+    }
+
+    function bindEvent(ele, type, fn) {
+        if (ele.attachEvent) {
+            ele.attachEvent && ele.attachEvent('on' + type, fn);
+        } else {
+            ele.addEventListener(type, fn, { capture: false, passive: true });
+        }
+    }
+
+    function unbindEvent(ele, type, fn) {
+        if (ele.detachEvent) {
+            ele.detachEvent && ele.detachEvent('on' + type, fn);
+        } else {
+            ele.removeEventListener(type, fn, { capture: false, passive: true });
+        }
+    }
+
+    function each(object, fn) {
+        if (object && fn) {
+            var l = object.length;
+            for (var i = 0; i < l && fn(object[i], i) !== false; i++) {}
+        }
+    }
+
+    function throttle(fn, minDelay, scope) {
+        var lastCall = 0;
+        return function() {
+            var now = +new Date();
+            if (now - lastCall < minDelay) {
+                return;
+            }
+            lastCall = now;
+            fn.apply(scope, arguments);
+        };
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/instafeed.js/instafeed.js":
+/*!************************************************!*\
+  !*** ./node_modules/instafeed.js/instafeed.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Generated by CoffeeScript 1.9.3
+(function() {
+  var Instafeed;
+
+  Instafeed = (function() {
+    function Instafeed(params, context) {
+      var option, value;
+      this.options = {
+        target: 'instafeed',
+        get: 'popular',
+        resolution: 'thumbnail',
+        sortBy: 'none',
+        links: true,
+        mock: false,
+        useHttp: false
+      };
+      if (typeof params === 'object') {
+        for (option in params) {
+          value = params[option];
+          this.options[option] = value;
+        }
+      }
+      this.context = context != null ? context : this;
+      this.unique = this._genKey();
+    }
+
+    Instafeed.prototype.hasNext = function() {
+      return typeof this.context.nextUrl === 'string' && this.context.nextUrl.length > 0;
+    };
+
+    Instafeed.prototype.next = function() {
+      if (!this.hasNext()) {
+        return false;
+      }
+      return this.run(this.context.nextUrl);
+    };
+
+    Instafeed.prototype.run = function(url) {
+      var header, instanceName, script;
+      if (typeof this.options.clientId !== 'string') {
+        if (typeof this.options.accessToken !== 'string') {
+          throw new Error("Missing clientId or accessToken.");
+        }
+      }
+      if (typeof this.options.accessToken !== 'string') {
+        if (typeof this.options.clientId !== 'string') {
+          throw new Error("Missing clientId or accessToken.");
+        }
+      }
+      if ((this.options.before != null) && typeof this.options.before === 'function') {
+        this.options.before.call(this);
+      }
+      if (typeof document !== "undefined" && document !== null) {
+        script = document.createElement('script');
+        script.id = 'instafeed-fetcher';
+        script.src = url || this._buildUrl();
+        header = document.getElementsByTagName('head');
+        header[0].appendChild(script);
+        instanceName = "instafeedCache" + this.unique;
+        window[instanceName] = new Instafeed(this.options, this);
+        window[instanceName].unique = this.unique;
+      }
+      return true;
+    };
+
+    Instafeed.prototype.parse = function(response) {
+      var anchor, childNodeCount, childNodeIndex, childNodesArr, e, eMsg, fragment, header, htmlString, httpProtocol, i, image, imageObj, imageString, imageUrl, images, img, imgHeight, imgOrient, imgUrl, imgWidth, instanceName, j, k, len, len1, len2, node, parsedLimit, reverse, sortSettings, targetEl, tmpEl;
+      if (typeof response !== 'object') {
+        if ((this.options.error != null) && typeof this.options.error === 'function') {
+          this.options.error.call(this, 'Invalid JSON data');
+          return false;
+        } else {
+          throw new Error('Invalid JSON response');
+        }
+      }
+      if (response.meta.code !== 200) {
+        if ((this.options.error != null) && typeof this.options.error === 'function') {
+          this.options.error.call(this, response.meta.error_message);
+          return false;
+        } else {
+          throw new Error("Error from Instagram: " + response.meta.error_message);
+        }
+      }
+      if (response.data.length === 0) {
+        if ((this.options.error != null) && typeof this.options.error === 'function') {
+          this.options.error.call(this, 'No images were returned from Instagram');
+          return false;
+        } else {
+          throw new Error('No images were returned from Instagram');
+        }
+      }
+      if ((this.options.success != null) && typeof this.options.success === 'function') {
+        this.options.success.call(this, response);
+      }
+      this.context.nextUrl = '';
+      if (response.pagination != null) {
+        this.context.nextUrl = response.pagination.next_url;
+      }
+      if (this.options.sortBy !== 'none') {
+        if (this.options.sortBy === 'random') {
+          sortSettings = ['', 'random'];
+        } else {
+          sortSettings = this.options.sortBy.split('-');
+        }
+        reverse = sortSettings[0] === 'least' ? true : false;
+        switch (sortSettings[1]) {
+          case 'random':
+            response.data.sort(function() {
+              return 0.5 - Math.random();
+            });
+            break;
+          case 'recent':
+            response.data = this._sortBy(response.data, 'created_time', reverse);
+            break;
+          case 'liked':
+            response.data = this._sortBy(response.data, 'likes.count', reverse);
+            break;
+          case 'commented':
+            response.data = this._sortBy(response.data, 'comments.count', reverse);
+            break;
+          default:
+            throw new Error("Invalid option for sortBy: '" + this.options.sortBy + "'.");
+        }
+      }
+      if ((typeof document !== "undefined" && document !== null) && this.options.mock === false) {
+        images = response.data;
+        parsedLimit = parseInt(this.options.limit, 10);
+        if ((this.options.limit != null) && images.length > parsedLimit) {
+          images = images.slice(0, parsedLimit);
+        }
+        fragment = document.createDocumentFragment();
+        if ((this.options.filter != null) && typeof this.options.filter === 'function') {
+          images = this._filter(images, this.options.filter);
+        }
+        if ((this.options.template != null) && typeof this.options.template === 'string') {
+          htmlString = '';
+          imageString = '';
+          imgUrl = '';
+          tmpEl = document.createElement('div');
+          for (i = 0, len = images.length; i < len; i++) {
+            image = images[i];
+            imageObj = image.images[this.options.resolution];
+            if (typeof imageObj !== 'object') {
+              eMsg = "No image found for resolution: " + this.options.resolution + ".";
+              throw new Error(eMsg);
+            }
+            imgWidth = imageObj.width;
+            imgHeight = imageObj.height;
+            imgOrient = "square";
+            if (imgWidth > imgHeight) {
+              imgOrient = "landscape";
+            }
+            if (imgWidth < imgHeight) {
+              imgOrient = "portrait";
+            }
+            imageUrl = imageObj.url;
+            httpProtocol = window.location.protocol.indexOf("http") >= 0;
+            if (httpProtocol && !this.options.useHttp) {
+              imageUrl = imageUrl.replace(/https?:\/\//, '//');
+            }
+            imageString = this._makeTemplate(this.options.template, {
+              model: image,
+              id: image.id,
+              link: image.link,
+              type: image.type,
+              image: imageUrl,
+              width: imgWidth,
+              height: imgHeight,
+              orientation: imgOrient,
+              caption: this._getObjectProperty(image, 'caption.text'),
+              likes: image.likes.count,
+              comments: image.comments.count,
+              location: this._getObjectProperty(image, 'location.name')
+            });
+            htmlString += imageString;
+          }
+          tmpEl.innerHTML = htmlString;
+          childNodesArr = [];
+          childNodeIndex = 0;
+          childNodeCount = tmpEl.childNodes.length;
+          while (childNodeIndex < childNodeCount) {
+            childNodesArr.push(tmpEl.childNodes[childNodeIndex]);
+            childNodeIndex += 1;
+          }
+          for (j = 0, len1 = childNodesArr.length; j < len1; j++) {
+            node = childNodesArr[j];
+            fragment.appendChild(node);
+          }
+        } else {
+          for (k = 0, len2 = images.length; k < len2; k++) {
+            image = images[k];
+            img = document.createElement('img');
+            imageObj = image.images[this.options.resolution];
+            if (typeof imageObj !== 'object') {
+              eMsg = "No image found for resolution: " + this.options.resolution + ".";
+              throw new Error(eMsg);
+            }
+            imageUrl = imageObj.url;
+            httpProtocol = window.location.protocol.indexOf("http") >= 0;
+            if (httpProtocol && !this.options.useHttp) {
+              imageUrl = imageUrl.replace(/https?:\/\//, '//');
+            }
+            img.src = imageUrl;
+            if (this.options.links === true) {
+              anchor = document.createElement('a');
+              anchor.href = image.link;
+              anchor.appendChild(img);
+              fragment.appendChild(anchor);
+            } else {
+              fragment.appendChild(img);
+            }
+          }
+        }
+        targetEl = this.options.target;
+        if (typeof targetEl === 'string') {
+          targetEl = document.getElementById(targetEl);
+        }
+        if (targetEl == null) {
+          eMsg = "No element with id=\"" + this.options.target + "\" on page.";
+          throw new Error(eMsg);
+        }
+        targetEl.appendChild(fragment);
+        header = document.getElementsByTagName('head')[0];
+        header.removeChild(document.getElementById('instafeed-fetcher'));
+        instanceName = "instafeedCache" + this.unique;
+        window[instanceName] = void 0;
+        try {
+          delete window[instanceName];
+        } catch (_error) {
+          e = _error;
+        }
+      }
+      if ((this.options.after != null) && typeof this.options.after === 'function') {
+        this.options.after.call(this);
+      }
+      return true;
+    };
+
+    Instafeed.prototype._buildUrl = function() {
+      var base, endpoint, final;
+      base = "https://api.instagram.com/v1";
+      switch (this.options.get) {
+        case "popular":
+          endpoint = "media/popular";
+          break;
+        case "tagged":
+          if (!this.options.tagName) {
+            throw new Error("No tag name specified. Use the 'tagName' option.");
+          }
+          endpoint = "tags/" + this.options.tagName + "/media/recent";
+          break;
+        case "location":
+          if (!this.options.locationId) {
+            throw new Error("No location specified. Use the 'locationId' option.");
+          }
+          endpoint = "locations/" + this.options.locationId + "/media/recent";
+          break;
+        case "user":
+          if (!this.options.userId) {
+            throw new Error("No user specified. Use the 'userId' option.");
+          }
+          endpoint = "users/" + this.options.userId + "/media/recent";
+          break;
+        default:
+          throw new Error("Invalid option for get: '" + this.options.get + "'.");
+      }
+      final = base + "/" + endpoint;
+      if (this.options.accessToken != null) {
+        final += "?access_token=" + this.options.accessToken;
+      } else {
+        final += "?client_id=" + this.options.clientId;
+      }
+      if (this.options.limit != null) {
+        final += "&count=" + this.options.limit;
+      }
+      final += "&callback=instafeedCache" + this.unique + ".parse";
+      return final;
+    };
+
+    Instafeed.prototype._genKey = function() {
+      var S4;
+      S4 = function() {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+      };
+      return "" + (S4()) + (S4()) + (S4()) + (S4());
+    };
+
+    Instafeed.prototype._makeTemplate = function(template, data) {
+      var output, pattern, ref, varName, varValue;
+      pattern = /(?:\{{2})([\w\[\]\.]+)(?:\}{2})/;
+      output = template;
+      while (pattern.test(output)) {
+        varName = output.match(pattern)[1];
+        varValue = (ref = this._getObjectProperty(data, varName)) != null ? ref : '';
+        output = output.replace(pattern, function() {
+          return "" + varValue;
+        });
+      }
+      return output;
+    };
+
+    Instafeed.prototype._getObjectProperty = function(object, property) {
+      var piece, pieces;
+      property = property.replace(/\[(\w+)\]/g, '.$1');
+      pieces = property.split('.');
+      while (pieces.length) {
+        piece = pieces.shift();
+        if ((object != null) && piece in object) {
+          object = object[piece];
+        } else {
+          return null;
+        }
+      }
+      return object;
+    };
+
+    Instafeed.prototype._sortBy = function(data, property, reverse) {
+      var sorter;
+      sorter = function(a, b) {
+        var valueA, valueB;
+        valueA = this._getObjectProperty(a, property);
+        valueB = this._getObjectProperty(b, property);
+        if (reverse) {
+          if (valueA > valueB) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
+        if (valueA < valueB) {
+          return 1;
+        } else {
+          return -1;
+        }
+      };
+      data.sort(sorter.bind(this));
+      return data;
+    };
+
+    Instafeed.prototype._filter = function(images, filter) {
+      var filteredImages, fn, i, image, len;
+      filteredImages = [];
+      fn = function(image) {
+        if (filter(image)) {
+          return filteredImages.push(image);
+        }
+      };
+      for (i = 0, len = images.length; i < len; i++) {
+        image = images[i];
+        fn(image);
+      }
+      return filteredImages;
+    };
+
+    return Instafeed;
+
+  })();
+
+  (function(root, factory) {
+    if (true) {
+      return !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else {}
+  })(this, function() {
+    return Instafeed;
+  });
+
+}).call(this);
+
+
+/***/ }),
+
 /***/ "./node_modules/tiny-slider/src/helpers/Object.keys.js":
 /*!*************************************************************!*\
   !*** ./node_modules/tiny-slider/src/helpers/Object.keys.js ***!
@@ -3939,10 +4697,19 @@ var tns = function(options) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_tiny_slider_src_tiny_slider__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../node_modules/tiny-slider/src/tiny-slider */ "./node_modules/tiny-slider/src/tiny-slider.js");
+/* harmony import */ var _node_modules_instafeed_js_instafeed_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../node_modules/instafeed.js/instafeed.js */ "./node_modules/instafeed.js/instafeed.js");
+/* harmony import */ var _node_modules_instafeed_js_instafeed_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_instafeed_js_instafeed_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_blazy_blazy_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/blazy/blazy.js */ "./node_modules/blazy/blazy.js");
+/* harmony import */ var _node_modules_blazy_blazy_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_node_modules_blazy_blazy_js__WEBPACK_IMPORTED_MODULE_2__);
+
+
 
 var slider = null;
+var app = {};
 
 function rebuildSlider(view) {
+  console.log('rebuild');
+
   if (slider) {
     slider.destroy();
   }
@@ -3976,9 +4743,43 @@ function getView() {
   return view;
 }
 
-function init() {
+function initMain() {
   var view = getView();
-  rebuildSlider(view);
+
+  if (document.querySelector('.main-slider .slides')) {
+    rebuildSlider(view);
+  }
+
+  window.addEventListener('resize', function (event) {
+    var newView = getView();
+
+    if (view !== newView) {
+      view = newView;
+      rebuildSlider(newView);
+    }
+  });
+  document.querySelector('#arrow-down').addEventListener('click', function (e) {
+    e.preventDefault();
+    var sliderHeight = document.querySelector('.main-section').offsetHeight;
+    window.scroll(0, sliderHeight + 50);
+  });
+
+  if (view === 1) {
+    window.addEventListener('scroll', function () {
+      var sliderHeight = document.querySelector('.main-section').offsetHeight;
+      var humb = document.querySelector('#humb-btn');
+
+      if (window.pageYOffset > sliderHeight) {
+        humb.classList.add('color');
+      } else {
+        if (humb.classList.contains('color')) {
+          humb.classList.remove('color');
+        }
+      }
+    });
+  }
+
+  initInstaPlugin();
   return view;
 }
 
@@ -3986,19 +4787,62 @@ var changeTextColor = function changeTextColor(info, eventName) {
   var elem = document.querySelector('.main-section .tns-slide-active');
   var color = elem.getAttribute('data-color');
   document.querySelector('.menu').style.color = color;
+  document.querySelector('.main-section').style.color = color;
 };
 
 document.addEventListener("DOMContentLoaded", function () {
-  var lastView = init();
-  window.addEventListener('resize', function (event) {
-    var newView = getView();
+  if (document.querySelector("#home_page")) {
+    initMain();
+  } else {
+    subPageInit();
+  }
 
-    if (lastView !== newView) {
-      lastView = newView;
-      rebuildSlider(newView);
+  document.addEventListener('click', function (event) {
+    if (event.target.matches('#humb-btn')) {
+      event.target.classList.toggle('animate-btn');
+      document.querySelector('.page-container').classList.toggle('active');
+      document.querySelector('body').classList.toggle('scroll-stop');
     }
   });
-});
+  app.bLazy = new _node_modules_blazy_blazy_js__WEBPACK_IMPORTED_MODULE_2___default.a({
+    src: 'blazySrc'
+  });
+  setTimeout(function () {
+    app.bLazy.revalidate();
+    console.log('bLazy revalidate');
+  }, 2000);
+  disableLoader();
+}); // function setSliderHeight(){
+//     const windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+//     const elem = document.querySelector('#home_page .main-section');
+//     elem.style.height = windowHeight+'px';
+//     return windowHeight;
+// }
+
+function disableLoader() {
+  var loader = document.querySelector('#overlay');
+  loader.style.display = 'none';
+}
+
+function initInstaPlugin() {}
+
+function subPageInit() {
+  var customerItem = document.querySelector('#customerZone .customerZone-item');
+
+  if (customerItem) {
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('.closeForm')) {
+        e.preventDefault();
+        e.target.closest('.customerZone-item').classList.remove('active');
+      } else if (e.target.matches('.custZoneForm button')) {
+        e.target.closest('form').submit();
+      } else if (e.target.closest('.customerZone-item')) {
+        e.preventDefault();
+        e.target.closest('.customerZone-item').classList.add('active');
+      }
+    });
+  }
+}
 
 /***/ }),
 

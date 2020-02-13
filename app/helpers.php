@@ -1,5 +1,6 @@
 <?php
 
+use App\CmsZone;
 use App\Settings;
 use Illuminate\Support\Facades\Cache;
 
@@ -53,11 +54,8 @@ function formatSizeUnits($bytes)
 }
 
 function getPageSettings(){
-    $settings = null;
-    if(Cache::has('pageSettings')){
-        $settings = Cache::get('pageSettings');
-    }else{
-        $data = Settings::all();
+
+    $data = Settings::all();
         $settings = [
             'instaToken' =>  $data->where('name', 'instagram_token')->first(),
             'instaLink' => $data->where('name', 'instagram_link')->first(),
@@ -70,17 +68,44 @@ function getPageSettings(){
             'additionsBodyBottom' => $data->where('name', 'additions_body_bottom')->first(),
             'favicon' => $data->where('name', 'favicon')->first(),
             'contactPhone' => $data->where('name', 'contact_phone')->first(),
-            'contactEmail' => $data->where('name', 'contact_email')->first(),
-    
+            'contactEmail' => $data->where('name', 'contact_email')->first(),  
         ];
-        foreach ($settings as $key => $item) {
+
+            foreach ($settings as $key => $item) {
             if ($item) {
              $settings[$key] =  $item->value;
             }else{
                 $settings[$key] = '';
             }
         }
-        Cache::put('pageSettings', $settings, 300);
+        
+    return $settings;
+}
+
+function getPageSettingsCached(){
+    $settings = null;
+    if(Cache::has('settings')){
+        $settings = Cache::get('settings');
+    }else{
+        $settings = getPageSettings();
     }
     return $settings;
+}
+
+
+function getCMSZone($page){
+    if(Cache::has('cmsZones')){
+        $data = Cache::get('cmsZones');
+
+    }else{
+        $data = CmsZone::all();
+        Cache::put('cmsZones', $data, 300);
+  
+    }  
+    $data = $data->where('page', $page)->all();
+    $cmsZones = [];
+    foreach($data as $item){
+        $cmsZones[$item->name] = $item->content;
+    }
+    return $cmsZones;
 }

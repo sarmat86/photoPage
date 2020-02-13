@@ -6,8 +6,8 @@ Edit customer zone
 
 
     <div class="card">
-        <form action="{{action('CustomerZoneController@update', $customerZone->id) }}" class="gallery_create_form" method="POST"
-            enctype="multipart/form-data">
+        <form action="{{action('CustomerZoneController@update', $customerZone->id) }}" class="gallery_create_form " method="POST"
+            enctype="multipart/form-data" data-id="{{$customerZone->id}}">
             @csrf
             @method('PATCH')
             <div class="row">
@@ -44,21 +44,42 @@ Edit customer zone
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="title">File with photos (.zip, .rar)</label>
-                        <input type="file" name="file_cszone" id="file_cszone" class="d-block">
+
+            <div class="col-md-12 upload-wrapper {{$customerZone->file ? 'uploaded' : ''}}" >
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="resumable-load">
+                            <div id="resumable-error" style="display: none">
+                                Resumable not supported
+                            </div>
+                            <div id="resumable-drop" style="display: none">
+                                <div id="customerZoneFileBtn" data-id="{{$customerZone->id}}"  class="btn btn-warning">Upload file</div>
+                            </div>
+                            <ul id="file-upload-list" class="list-unstyled">    
+                                @if ($customerZone->file)
+                                    <li class="upload_preview">
+                                        <span>{{$fileName}}</span>
+                                        <a href="#" class="btn btn-danger removeCustomerFile edit-mode" data-id="{{$customerZone->id}}"><i class="icon-trash-empty"></i></a>     
+                                    </li>
+                                @endif      
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <div class=" col-md-12">
-                    <div id="galleryPhotosDropZone" data-id="{{$customerZone->id}}" data-type="{{'App\CustomerZone'}}" class="dropzone dropzone-style"></div>
-                </div>
+            </div>
+             
+            <div class=" col-md-12">
+                <div id="galleryPhotosDropZone" data-id="{{$customerZone->id}}" data-type="{{'App\CustomerZone'}}" class="dropzone dropzone-style gallery_data_update"></div>
+            </div>
             </div>
         </form>
+        <div class="change_view">
+                <a id="change_gallery_view" href="#">Change view</a>
+            </div>
         @if (count($customerZonePhotos) === 0)
         <div class="gallery_photos_wrapper  dropzone-previews "></div>
         @else
-
+        
         <div class="gallery_photos_wrapper  dropzone-previews">
             @foreach ($customerZonePhotos as $item)
             <div data-id="{{$item->id}}" data-position="{{$item->position}}" class="photo-tile">

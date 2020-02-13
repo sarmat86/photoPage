@@ -6,7 +6,7 @@ Customer zones list
 
 @if (count($customerZones) > 0)
 <div class="card">
-    <div class="gallery_list_wrapper"  data-type="customer_zone">
+    <div class="gallery_list_wrapper gallery_data_update"  data-type="customer_zone">
         @foreach ($customerZones as $customerZone)
         <div class="gallery_item" data-id="{{$customerZone->id}}" data-position="{{$customerZone->position}}">
             <div class="move_handle"><i class="icon-move"></i></div>

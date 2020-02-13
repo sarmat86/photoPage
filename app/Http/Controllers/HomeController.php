@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Category;
 use App\Blog;
 use App\CmsZone;
+use App\Gallery;
 use App\Slide;
 use Illuminate\Support\Facades\Cache;
 
@@ -41,21 +42,25 @@ class HomeController extends Controller
             $posts = Blog::all();
             Cache::put('posts', $posts, 300);
         }
-        if(Cache::has('cmsZones')){
-            $cmsZones = Cache::get('cmsZones');
-        }else{
-            $cmsZones = CmsZone::all();
-            Cache::put('cmsZones', $cmsZones, 300);
-        }
+        $cmsZones = getCMSZone('home');
         if(Cache::has('slides')){
             $slides = Cache::get('slides');
         }else{
             $slides = Slide::where('confirmed', 1)->get()->sortBy('position');
             Cache::put('slides', $slides, 300);
         }
-    
-        $settings = getPageSettings();
-
-        return view('front.home', compact('categories', 'posts', 'cmsZones', 'slides', 'settings'));
+        if(Cache::has('settings')){
+            $settings = Cache::get('settings');
+        }else{
+            $settings = getPageSettings();
+        }
+      
+        if(Cache::has('homeGallery')){
+            $homeGallery = Cache::get('homeGallery');
+        }else{
+            $homeGallery = Gallery::where('confirmed', 1)->orderBy('position', 'desc')->take(4)->get();
+            Cache::put('homeGallery', $homeGallery, 300);
+        }
+        return view('front.home', compact('categories', 'posts', 'cmsZones', 'slides', 'settings', 'homeGallery'));
     }
 }

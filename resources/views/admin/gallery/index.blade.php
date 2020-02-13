@@ -6,7 +6,7 @@ Gallery list
 
 @if (count($galleries) > 0)
 <div class="card">
-    <div class="gallery_list_wrapper" data-type="gallery">
+    <div class="gallery_list_wrapper gallery_data_update" data-type="gallery">
         @foreach ($galleries as $gallery)
         <div class="gallery_item" data-id="{{$gallery->id}}" data-position="{{$gallery->position}}">
             <div class="move_handle"><i class="icon-move"></i></div>

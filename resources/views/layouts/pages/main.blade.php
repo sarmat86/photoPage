@@ -7,7 +7,7 @@
   <meta keywords="{{ $settings['metaKeywords'] }}">
   <meta name="description" content="{{ $settings['metaDescription'] }}">
   <title>{{ $settings['pageTitle'] }}</title>
-<link rel="shortcut icon" type="image/jpg" href="{{Storage::url($settings['favicon'])}}">
+  <link rel="shortcut icon" type="image/jpg" href="{{$settings['favicon'] ? Storage::url($settings['favicon']) : ''}}">
   <link rel="stylesheet" href="{{asset('css\main.css')}}">
    {{-- SCRIPTS --}}
    {!! $settings['additionsHead'] !!}
@@ -16,6 +16,9 @@
 <body>
   {!! $settings['additionsBodyTop'] !!}
   <div id="viewType" style="display: none;"></div>
+  <div id="overlay">
+    <div class="spinner"></div>
+  </div>
   @yield('content')
   @include('front.footer')
   {!! $settings['additionsBodyBottom'] !!}

@@ -15,7 +15,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        $media = Media::all();
+        $media = Media::orderBy('created_at', 'desc')->paginate(5);
         return view('admin.settings.media', compact('media'));
     }
 
@@ -60,6 +60,24 @@ class MediaController extends Controller
                     'success' => false, 
                 ]);
             }
+        }
+    }
+    public function addMedia(Request $request)
+    {
+        $request->file('file');
+        $input = [];
+        if ($file = $request->file('file')) {
+
+            $name =  time().'_'.$file->getClientOriginalName();
+            $size = $file->getClientSize();
+            $path = $file->storeAs('media_photos', $name, 'public');
+            $input['path'] = $path;
+            $input['size'] = $size;
+            $input['name'] = $request->alt;
+
+            $photo = Media::create($input);
+            $request->session()->flash('status', 'New media has been added');
+            return redirect()->back();
         }
     }
 

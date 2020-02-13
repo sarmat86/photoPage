@@ -17,7 +17,7 @@ class CmsZoneController extends Controller
     public function index()
     {
         $cmsZones = CmsZone::orderBy('page', 'asc')->paginate(15);
-        return view('admin.CmsZones.index', compact('cmsZones'));
+        return view('admin.cmsZones.index', compact('cmsZones'));
     }
 
     /**
@@ -27,7 +27,7 @@ class CmsZoneController extends Controller
      */
     public function create()
     {
-        return view('admin.CmsZones.create');
+        return view('admin.cmsZones.create');
     }
 
     /**
@@ -58,7 +58,7 @@ class CmsZoneController extends Controller
 
 
         $request->session()->flash('status', 'New CMS zone has been created');
-        return redirect()->route('CmsZone.index');
+        return redirect()->route('cmsZones.index');
     }
 
     /**
@@ -81,7 +81,7 @@ class CmsZoneController extends Controller
     public function edit($id)
     {
         $cmsZone = CmsZone::findOrFail($id);
-        return view('admin.CmsZones.edit', compact('cmsZone'));
+        return view('admin.cmsZones.edit', compact('cmsZone'));
     }
 
     /**
@@ -124,7 +124,7 @@ class CmsZoneController extends Controller
         }
         $cmsZone->delete();
 
-        $request->session()->flash('status', 'Cms zone "'.$request->name.'"'.' has been deleted');
-        return redirect()->route('CmsZone.index');
+        $request->session()->flash('status', 'Cms zone "'.$cmsZone->name.'"'.' has been deleted');
+        return redirect()->route('cmsZones.index');
     }
 }

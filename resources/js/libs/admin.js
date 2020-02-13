@@ -2,20 +2,9 @@ require('trumbowyg');
 require('trumbowyg/plugins/upload/trumbowyg.upload');
 require('trumbowyg/plugins/emoji/trumbowyg.emoji');
 
-const imgTemplate = `<div data-id="" data-position="" class="photo-tile">
-<div class="move_handle"><i class="icon-move"></i></div>
-<div class="photo_tile_img_wrapper"><img src=""></div>
-<div class="photo_tile_btns__wrapper">
-        <a href="#" class="btn btn-danger galPhoto__del"><i class="icon-trash-empty"></i></a>
-      </div>
-        <div class="photo_tile_input_wrapper">
-          <input type="text" name="alt" placeholder="photo description" value="">
-          </div>
-</div>`;
-
 document.addEventListener("DOMContentLoaded", function () {
 
-    console.log('admin-panel');
+    console.log('admin-panel v: 2.0');
     Dropzone.autoDiscover = false;
     let galleryDropZone = null;
     if (document.getElementsByClassName('dropzone').length) {
@@ -44,6 +33,68 @@ document.addEventListener("DOMContentLoaded", function () {
             elem.querySelector('img').setAttribute('src', response.url)
             file.previewElement.id = response.id;
         });
+    }
+//sending files by resumable
+    
+    if (document.querySelector('#customerZoneFileBtn')) {
+
+    const $fileUpload = $('#customerZoneFileBtn');
+    const $fileUploadDrop = $('#resumable-drop');
+    const $uploadList = $("#file-upload-list");
+    const id = $fileUpload.attr('data-id');
+
+    if ($fileUpload.length > 0 ) {
+        var resumable = new Resumable({
+            chunkSize: 30 * 1024 * 1024, 
+            simultaneousUploads: 1,
+            testChunks: false,
+            maxFiles: 1,
+            throttleProgressCallbacks: 1,
+            target: "/admin/customerZone/uploadFile",
+            query:{
+                _token : $('meta[name="csrf-token"]').attr('content'),
+                customerZone_id: id,
+            }
+        });
+
+    // Resumable.js isn't supported, fall back on a different method
+        if (!resumable.support) {
+            $('#resumable-error').show();
+        } else {
+            // Show a place for dropping/selecting files
+             $fileUploadDrop.show();
+             resumable.assignDrop($fileUpload[0]);
+              resumable.assignBrowse($fileUploadDrop[0]);
+
+            // Handle file add event
+            resumable.on('fileAdded', function (file) {
+                
+                $uploadList.show();
+                $('.resumable-progress .progress-resume-link').hide();
+                $('.resumable-progress .progress-pause-link').show();
+                // Add the file to the list
+                $uploadList.append(filePrevTemplate);
+                $('.upload_preview > span').append(file.fileName) 
+                // Actually start the upload
+                resumable.upload();
+            });
+            resumable.on('fileSuccess', function (file, message) {
+                progressBar(false);
+                document.querySelector('.upload-wrapper').classList.add('uploaded');
+            });
+            resumable.on('fileError', function (file, message) {
+                // Reflect that the file upload has resulted in error
+                $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html('(file could not be uploaded: ' + message + ')');
+                progressBar(false);
+            });
+            resumable.on('fileProgress', function (file) {
+                // Handle progress for both the file and the overall upload
+                progressBar(true, file.progress() * 100);
+                $('.resumable-file-' + file.uniqueIdentifier + ' .resumable-file-progress').html(Math.floor(file.progress() * 100) + '%');
+                // $('.progress-bar').css({width: Math.floor(resumable.progress() * 100) + '%'});
+            });
+        }
+    }
     }
 
     $.trumbowyg.svgPath = '/fonts/trumbowyg/icons.svg';
@@ -150,7 +201,16 @@ document.addEventListener("DOMContentLoaded", function () {
         } else if (event.target.matches('.galPosition__update')) {
             event.preventDefault();
             updateGalleryPosition(getGalleryData('.gallery_item'));
-        } else {
+        } else if (event.target.matches('#change_gallery_view')) {
+            event.preventDefault();
+           document.querySelector('.gallery_photos_wrapper').classList.toggle('horizontal_view');
+
+        } else if (event.target.closest('.removeCustomerFile.edit-mode')) {
+            event.preventDefault();
+           const id = document.querySelector('.gallery_create_form ').getAttribute('data-id');
+            deleteFile(id, true);
+        }  
+        else {
             return false;
         }
     });
@@ -239,13 +299,15 @@ function updateGalleryPosition(data) {
 
 function getGalleryData(selector, alt = 0) {
     const elems = document.querySelectorAll(selector);
-    let galleryType = document.querySelector('.gallery_list_wrapper');
+    let galleryType = document.querySelector('.gallery_data_update');
     if (galleryType) {
         galleryType = galleryType.getAttribute('data-type');  
     }
-    elems.forEach((elem, i) => {
-        elem.setAttribute('data-position', i + 1);
-    });
+
+    let elemsLength = elems.length;
+    for (let index = 0; index < elems.length; index++) {
+     elems[index].setAttribute('data-position', elemsLength--);  
+    }
     let resultData = {
         galleryData: [],
         galleryType: galleryType
@@ -318,6 +380,33 @@ function deletePhotoRequest(id) {
     });
 }
 
+function deleteFile(id, editMode) {
+    loader(true);
+    $.ajax({
+        type: 'POST',
+        url: '/admin/customerZone/deleteFile/' + id,
+        dataType: 'JSON',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+            loader(false);
+            alertify.alert('Success', 'File has been deleted!');
+            if (editMode) {
+                document.querySelector('.edit-mode').closest('.upload_preview').remove();
+            }
+            if(document.querySelector('.upload-wrapper').classList.contains('uploaded')){
+                document.querySelector('.upload-wrapper').classList.remove('uploaded');
+            }
+        },
+        error: function (xhr) {
+            loader(false);
+            alertify.alert('Error', 'An error has occurred. Try again later');
+            console.log(xhr.responseText);
+        }
+    });
+}
+
 function deletePhotoFromGallery(id) {
     let photo = document.querySelector('div[data-id="' + id + '"]');
     photo.remove();
@@ -368,3 +457,57 @@ let onLoadThumbnail = function(event) {
     wrapper.querySelector('.thumbnail_description').classList.add('active');
      output.src = URL.createObjectURL(event.target.files[0]);
 };
+
+const progressBar = (flag, percent)=> {
+
+    const body = document.querySelector('body');
+
+    if (flag) {
+
+    if(body.classList.contains('p-bar')){
+        const progressBar = document.querySelector('.progress_bar__content');
+        const progressNbr = progressBar.querySelector('.percent-bar');
+        progressNbr.innerHTML = percent.toFixed(0) + '%';
+        
+    }else{
+        body.classList.add('p-bar');
+        const cover = document.createElement('div');
+        const progressBar = document.createElement('div');
+        progressBar.className = 'progress_bar__wrapper';
+
+        const html = `<div class="progress_bar__content"><span>Uploading...</span></h3><span class="percent-bar">0%</span></div>`;
+        progressBar.innerHTML = html;
+        cover.className = 'body-cover';
+        body.append(cover);
+        body.append(progressBar);
+    }
+
+    } else {
+        const cover = document.querySelector('.body-cover');
+        const progressBar = document.querySelector('.progress_bar__wrapper');
+        if(cover){
+            cover.remove();
+        }
+        if (progressBar) {
+            progressBar.remove();
+        }
+        if(body.classList.contains('p-bar')){
+            body.classList.remove('p-bar');
+        }
+
+    }
+}
+const imgTemplate = `<div data-id="" data-position="" class="photo-tile">
+<div class="move_handle"><i class="icon-move"></i></div>
+<div class="photo_tile_img_wrapper"><img src=""></div>
+<div class="photo_tile_btns__wrapper">
+        <a href="#" class="btn btn-danger galPhoto__del"><i class="icon-trash-empty"></i></a>
+      </div>
+        <div class="photo_tile_input_wrapper">
+          <input type="text" name="alt" placeholder="photo description" value="">
+          </div>
+</div>`;
+const filePrevTemplate = ` <li class="upload_preview ">
+<span></span>
+<a href="#" class="btn btn-danger removeCustomerFile edit-mode" data-id=""><i class="icon-trash-empty"></i></a>     
+</li>`;

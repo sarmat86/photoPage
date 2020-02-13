@@ -22,7 +22,7 @@ CMS zones list
       <td>{{$zone->page}}</td>
     <td>{{$zone->created_at->diffForHumans()}}
       <td>
-      <a href="{{route('CmsZone.edit', $zone->id)}}" class="btn btn-warning"><i class="icon-pencil"></i></a>
+      <a href="{{route('cmsZones.edit', $zone->id)}}" class="btn btn-warning"><i class="icon-pencil"></i></a>
       </td>
     </tr>
      @endforeach

@@ -4,9 +4,10 @@ Create new customer Zone
 @endsection
 @section('content')
 
+
 <div class="col-md-12">
     <div class="card">
-        <form  action="{{action('CustomerZoneController@update', $customerZone->id) }}" class="gallery_create_form" method="POST" enctype="multipart/form-data">
+        <form id="customerZoneForm"  action="{{action('CustomerZoneController@update', $customerZone->id) }}" class="gallery_create_form" method="POST" enctype="multipart/form-data" data-id="{{$customerZone->id}}">
             @csrf
             @method('PATCH')
             <div class="row">
@@ -19,7 +20,7 @@ Create new customer Zone
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="file" class="d-block">Upload thumbnail</label>
-                        <input type="file" name="file" id="file" class="d-block">
+                        <input type="file" name="file_thumbnail" id="file" class="d-block">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -42,21 +43,33 @@ Create new customer Zone
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="title">File with photos (.zip, .rar)</label>
-                        <input type="file" name="file_cszone" id="file_cszone" class="d-block">
+
+                <div class="col-md-12 upload-wrapper ">
+                    <div class="row">
+                        <div class="col-md-6" >
+                            <div class="resumable-load">
+                                <div id="resumable-error" style="display: none">
+                                    Resumable not supported
+                                </div>
+                                <div id="resumable-drop" style="display: none">
+                                    <div id="customerZoneFileBtn" data-id="{{$customerZone->id}}"  class="btn btn-warning">Upload file</div>
+                                </div>
+                                <ul id="file-upload-list" class="list-unstyled"  style="display: none"> </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-              
-                
+
                 <div class=" col-md-12">
-                    <div id="galleryPhotosDropZone" data-id="{{$customerZone->id}}" data-type="{{'App\CustomerZone'}}" class="dropzone dropzone-style"></div>
+                    <div id="galleryPhotosDropZone" data-id="{{$customerZone->id}}" data-type="{{'App\CustomerZone'}}" class="dropzone dropzone-style  gallery_data_update"></div>
                 </div>
+                
                
             </div>
         </form>
+        <div class="change_view">
+                <a id="change_gallery_view" href="#">Change view</a>
+            </div>
         <div class="gallery_photos_wrapper  dropzone-previews "></div>
         <div class="buttons_wrapper">
             <div class="row">
@@ -77,6 +90,8 @@ Create new customer Zone
 
 </div>
 </div>
+
+
 
 <form hidden class="delete-form" action="{{action('CustomerZoneController@destroy', $customerZone->id)}}" method="POST">
     @csrf

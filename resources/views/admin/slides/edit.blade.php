@@ -44,7 +44,7 @@ Edit slide
                   <div class="col-md-12">
                     <div class="form-group thumbnail_description {{$slide4 ? 'active' : ''}}">
                       <label for="title">Photo description </label>
-                      <input type="text" name="4_name" id="desktop_name" class="form-control" value={{$slide4 ? $slide4->name : ''}}>
+                      <input type="text" name="4_name" id="desktop_name" class="form-control" value="{{$slide4 ? $slide4->name : ''}}">
                     </div>
                   </div>
                 </div>
@@ -73,7 +73,7 @@ Edit slide
                     <div class="col-md-12">
                       <div class="form-group thumbnail_description {{$slide2 ? 'active' : ''}}">
                         <label for="title">Photo description </label>
-                        <input type="text" name="2_name" id="tablet_name" class="form-control" value={{$slide2 ? $slide2->name : ''}}>
+                        <input type="text" name="2_name" id="tablet_name" class="form-control" value="{{$slide2 ? $slide2->name : ''}}">
                       </div>
                     </div>
                   </div>
@@ -102,7 +102,7 @@ Edit slide
                     <div class="col-md-12">
                       <div class="form-group thumbnail_description {{$slide1 ? 'active' : ''}}">
                         <label for="title">Photo description </label>
-                        <input type="text" name="1_name" id="mobile_name" class="form-control" value={{$slide1 ? $slide1->name : ''}}>
+                        <input type="text" name="1_name" id="mobile_name" class="form-control" value="{{$slide1 ? $slide1->name : ''}}">
                       </div>
                     </div>
                   </div>

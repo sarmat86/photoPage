@@ -15,3 +15,6 @@
       <li><a href="{!! $settings['instaLink'] !!}" target="_blank" rel="noopener" class="link"><i class="icon-instagram" aria-hidden="true"></i></a></li>
       <li><a href="{!! $settings['fbLink'] !!}" target="_blank" rel="noopener" class="link"><i class="icon-facebook-squared"></i></a></li>
 </ul>
+<a id="arrow-down" href="#main-content" class="arrow-animation">
+  <i class="icon-angle-down"></i>
+</a>

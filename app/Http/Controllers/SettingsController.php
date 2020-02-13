@@ -88,6 +88,11 @@ class SettingsController extends Controller
 
     public function clearCache(Request $request){
         Cache::forget('pageSettings');
+        Cache::forget('slides');
+        Cache::forget('categories');
+        Cache::forget('posts');
+        Cache::forget('cmsZones');
+        Cache::forget('homeGallery');
         $request->session()->flash('status', 'Cache has been cleared.');
          return redirect()->back();
     }

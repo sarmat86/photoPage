@@ -30,10 +30,10 @@
         </li>
         <li><a ><i class="icon-pencil"></i>CMS zones</a>
             <ul class="nav nav-second-lvl">
-                <li class="{{request()->routeIs('CmsZone.create') == 1 ? 'active' : '' }}">
-                <a href="{{route('CmsZone.create')}}">Create</a></li>
-            <li class="{{request()->routeIs('CmsZone.index') == 1 ? 'active' : '' }}">
-                <a href="{{route('CmsZone.index')}}">CMS list</a>
+                <li class="{{request()->routeIs('CmsZones.create') == 1 ? 'active' : '' }}">
+                <a href="{{route('cmsZones.create')}}" class="admin_view">Create</a></li>
+            <li class="{{request()->routeIs('cmsZones.index') == 1 ? 'active' : '' }}">
+                <a href="{{route('cmsZones.index')}}" >CMS list</a>
             </li>
             </ul>
         </li>

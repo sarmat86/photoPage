@@ -13,6 +13,7 @@ mix.js([
 mix.scripts([
 'resources/js/libs/dropzone.js',
 'resources/js/libs/alertify.min.js',
+'resources/js/libs/resumable.min.js',
 ], 'public/js/admin/libs.js');
 
 mix.js([

@@ -14,7 +14,8 @@
         src4="{{$slide4  ? Storage::url($slide4->path) : ''}}" 
         src2="{{$slide2  ? Storage::url($slide2->path) : ''}}" 
         src1="{{$slide1  ? Storage::url($slide1->path) : ''}}" 
-        alt="{{$slide4  ? $slide4->name : ''}}">  
+        alt="{{$slide4  ? $slide4->name : ''}}"
+        >  
       </li>  
     @endforeach
 </ul>

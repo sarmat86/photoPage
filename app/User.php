@@ -42,7 +42,7 @@ class User extends Authenticatable
         return $this->belongsTo('App\Role');
     }
     public function isAdmin(){
-        if($this->role_id === 1){
+        if($this->role_id == 1){
             return true;
         }
         else {

@@ -27,7 +27,7 @@ class GalleryController extends Controller
                 }
            $item->delete();
         }
-        $galleries  = Gallery::all()->sortBy('position');
+        $galleries  = Gallery::orderBy('position', 'desc')->get();
         return view('admin.gallery.index', compact('galleries'));
     }
 
@@ -72,7 +72,8 @@ class GalleryController extends Controller
     public function edit($id)
     {
         $gallery  = Gallery::findOrFail($id);
-        $galleryPhotos = $gallery->galleryPhoto->sortBy('position');
+        // $galleryPhotos = $gallery->galleryPhoto->sortBy('position');
+        $galleryPhotos = $gallery->galleryPhoto->sortByDesc('position');
         return view('admin.gallery.edit', compact('gallery', 'galleryPhotos'));
     }
 
@@ -118,6 +119,7 @@ class GalleryController extends Controller
             $input['photo_id'] = $photo->id;
         }
         $input['autodelete'] = 0;
+        $input['position'] = $id;
         $gallery->update($input);
 
         $request->session()->flash('status', 'Gallery has been saved');

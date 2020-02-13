@@ -11,11 +11,8 @@ Dashboard
     <div class="col-md-6">
       <div class="card">
         <h4 class="jumbotron text-center">
-          Statistic
+          Panel version 2.0.1
         </h4>
-        <div>
-          <p>Place for statistic</p>
-        </div>
       </div>
     </div>
     <div class="col-md-6">

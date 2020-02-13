@@ -4,8 +4,8 @@ Edit CMS zone
 @endsection
 @section('content')
 
-      <div class="form-wrapper">
-      <form action="{{action('CmsZoneController@update', $cmsZone->id)}}" class="card" method="POST">
+      <div class="form-wrapper card">
+      <form action="{{action('CmsZoneController@update', $cmsZone->id)}}" method="POST">
           @csrf
           @method('PATCH')
         <div class="row">
@@ -31,13 +31,14 @@ Edit CMS zone
 
             <div class="form-group text-right">
                 <button type="submit" class="btn btn-primary">edit</button>
-            <form action="{{action('CmsZoneController@destroy', $cmsZone->id)}}">
-              @csrf
-              @method('DELETE')
-              <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
+       
               </div>
           </form>
+          <form action="{{action('CmsZoneController@destroy', $cmsZone->id)}}" method="POST" class="text-right admin_view">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
         </div>
 
 @endsection

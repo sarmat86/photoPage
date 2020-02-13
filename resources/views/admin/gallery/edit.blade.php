@@ -37,11 +37,15 @@ Edit gallery
                     </div>
                 </div>
                 <div class=" col-md-12">
-                    <div id="galleryPhotosDropZone" data-id="{{$gallery->id}}" class="dropzone dropzone-style"></div>
+                    <div id="galleryPhotosDropZone" data-id="{{$gallery->id}}" data-type="{{'App\Gallery'}}" class="dropzone dropzone-style gallery_data_update"></div>
                 </div>
             </div>
         </form>
+        <div class="change_view">
+                <a id="change_gallery_view" href="#">Change view</a>
+            </div>
         @if (count($galleryPhotos) === 0)
+        
         <div class="gallery_photos_wrapper  dropzone-previews "></div>
         @else
 
